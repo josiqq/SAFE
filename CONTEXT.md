@@ -60,16 +60,7 @@
 - Alertas y notificaciones por roles o turnos
 - Registro de llamadas o comunicaciones con otras entidades (policía, hospitales)
 
-## 7. Módulo de Geolocalización (opcional pero potente)
-
-**Objetivo:** Visualizar incidentes y unidades en tiempo real.
-
-### Submódulos:
-- Mapa de incidentes activos y recientes
-- Seguimiento GPS de unidades móviles
-- Rutas sugeridas (si se conecta con mapas públicos)
-
-## 8. Portal Público / Denuncias
+## 7. Portal Público / Denuncias
 
 **Objetivo:** Interacción con la comunidad.
 

@@ -1,8 +1,14 @@
 package com.josiqq.safe.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Equipo {
 
@@ -16,6 +22,4 @@ public class Equipo {
     private String ubicacion;
     private Date fechaAdquisicion;
     private Date fechaUltimoMantenimiento;
-
-    // Getters y Setters
 }

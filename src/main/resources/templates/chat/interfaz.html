@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Chat Interno</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-primary direct-chat direct-chat-primary">
+                <div class="card-header">
+                    <h3 class="card-title" id="chat-with-title">Chat Interno</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" title="Contactos" data-widget="chat-pane-toggle">
+                            <i class="fas fa-comments"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="direct-chat-messages" id="message-area" style="height: 500px;">
+                        <div class="text-center text-muted p-5">
+                             Selecciona un contacto para comenzar a chatear.
+                         </div>
+                    </div>
+                    <div class="direct-chat-contacts">
+                        <ul class="contacts-list">
+                            <li th:each="bombero : ${otrosBomberos}">
+                                <a href="#" class="select-user" th:data-username="${bombero.username}" th:data-fullname="${bombero.nombre + ' ' + bombero.apellido}">
+                                    <i class="bi bi-person-circle fa-2x p-2 text-primary"></i>
+                                    <div class="contacts-list-info">
+                                        <span class="contacts-list-name" th:text="${bombero.nombre + ' ' + bombero.apellido}">
+                                            <small class="contacts-list-date float-right" th:text="${bombero.rol != null ? bombero.rol.nombre : ''}"></small>
+                                        </span>
+                                        <span class="contacts-list-msg" th:text="${bombero.username}"></span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    </div>
+                <div class="card-footer">
+                    <form id="message-form" action="#" method="post">
+                        <div class="input-group">
+                            <input type="text" id="message" name="message" placeholder="Escribe un mensaje ..." class="form-control" disabled>
+                            <span class="input-group-append">
+                              <button type="submit" class="btn btn-primary" disabled>Enviar</button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+<th:block layout:fragment="page-scripts">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const currentUser = /*[[${currentUserUsername}]]*/ 'defaultUser';
+        /*]]>*/
+
+        $(function() {
+            const messageForm = $('#message-form');
+            const messageInput = $('#message');
+            const messageArea = $('#message-area');
+            const chatTitle = $('#chat-with-title');
+            
+            let stompClient = null;
+            let selectedUser = null;
+            let selectedUserFullName = null;
+
+            function connect() {
+                const socket = new SockJS('/ws-safe');
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, onConnected, onError);
+            }
+
+            function onConnected() {
+                stompClient.subscribe('/user/queue/messages', onMessageReceived);
+                console.log("Conectado al WebSocket!");
+            }
+
+            function onError(error) {
+                console.error('Error de WebSocket:', error);
+            }
+
+            function onMessageReceived(payload) {
+                const message = JSON.parse(payload.body);
+                if (selectedUser && message.remitenteUsername === selectedUser) {
+                    displayMessage(message);
+                } else {
+                    // Aquí puedes usar SweetAlert2 para una notificación más bonita
+                    Swal.fire({
+                      toast: true,
+                      position: 'top-end',
+                      icon: 'info',
+                      title: `Nuevo mensaje de ${message.remitenteUsername}`,
+                      showConfirmButton: false,
+                      timer: 3000
+                    });
+                }
+            }
+
+            // Evento para seleccionar un usuario de la lista de contactos
+            $('.contacts-list').on('click', '.select-user', async function(e) {
+                e.preventDefault();
+                selectedUser = $(this).data('username');
+                selectedUserFullName = $(this).data('fullname');
+                
+                chatTitle.text('Chat con ' + selectedUserFullName);
+                messageInput.prop('disabled', false);
+                messageForm.find('button').prop('disabled', false);
+
+                // Cargar historial
+                messageArea.html('<p class="text-center p-5">Cargando...</p>');
+                const response = await fetch(`/api/mensajes/${selectedUser}`);
+                const messages = await response.json();
+                
+                messageArea.html('');
+                messages.forEach(displayMessage);
+                
+                // Cierra el panel de contactos (si está abierto)
+                $('body').removeClass('direct-chat-contacts-open');
+            });
+            
+            // Evento para enviar un mensaje
+            messageForm.on('submit', function (e) {
+                e.preventDefault();
+                const messageContent = messageInput.val().trim();
+                if (messageContent && stompClient) {
+                    const chatMessage = {
+                        destinatario: { username: selectedUser },
+                        cuerpo: messageContent
+                    };
+                    stompClient.send("/app/chat.enviar", {}, JSON.stringify(chatMessage));
+                    
+                    // Muestra el mensaje enviado inmediatamente
+                    const sentMsg = {
+                        cuerpo: messageContent,
+                        remitenteUsername: currentUser,
+                        fechaEnvio: new Date().toISOString()
+                    };
+                    displayMessage(sentMsg);
+                    
+                    messageInput.val('');
+                }
+            });
+
+            // Función para renderizar un mensaje en la pantalla
+            function displayMessage(message) {
+                const isRight = message.remitenteUsername === currentUser;
+                const msgClass = isRight ? 'right' : '';
+                const name = isRight ? 'Tú' : selectedUserFullName;
+                
+                // Formatear la fecha
+                const timestamp = new Date(message.fechaEnvio).toLocaleString('es-ES', {
+                    hour: 'numeric', minute: 'numeric'
+                });
+
+                const messageHtml = `
+                    <div class="direct-chat-msg ${msgClass}">
+                        <div class="direct-chat-infos clearfix">
+                            <span class="direct-chat-name float-${isRight ? 'right' : 'left'}">${name}</span>
+                            <span class="direct-chat-timestamp float-${isRight ? 'left' : 'right'}">${timestamp}</span>
+                        </div>
+                        <i class="direct-chat-img bi bi-person-circle fa-2x"></i>
+                        <div class="direct-chat-text">
+                            ${message.cuerpo}
+                        </div>
+                    </div>`;
+                
+                messageArea.append(messageHtml);
+                messageArea.scrollTop(messageArea[0].scrollHeight);
+            }
+
+            connect();
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

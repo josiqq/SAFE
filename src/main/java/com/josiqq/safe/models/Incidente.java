@@ -1,10 +1,17 @@
 package com.josiqq.safe.models;
 
 import jakarta.persistence.*;
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDate;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Table(name = "incidentes")
 public class Incidente {
 
     @Id
@@ -13,8 +20,8 @@ public class Incidente {
 
     private String tipo; // incendio, rescate, materiales peligrosos
     private String ubicacion;
-    private Date fechaHoraInicio;
-    private Date fechaHoraFin;
+    private LocalDate fechaHoraInicio;
+    private LocalDate fechaHoraFin;
     private String descripcion;
     private String estado; // Activo, cerrado
 
@@ -24,9 +31,13 @@ public class Incidente {
     @ManyToMany
     private List<Vehiculo> vehiculosAsignados;
 
+    @ManyToMany
+    private List<Equipo> equiposAsignados;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bitacora_id", referencedColumnName = "id")
     private BitacoraPostMision bitacora;
 
-    // Getters y Setters
+    @OneToMany(mappedBy = "incidente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Foto> fotos;
 }

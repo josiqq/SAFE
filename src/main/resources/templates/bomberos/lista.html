@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Listado de Personal</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Personal Registrado</h3>
+                <a th:href="@{/bomberos/nuevo}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Registrar Nuevo Bombero
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="bomberosTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre Completo</th>
+                        <th>Username</th>
+                        <th>DNI</th>
+                        <th>Rol</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="bombero : ${bomberos}">
+                        <td th:text="${bombero.id}"></td>
+                        <td th:text="${bombero.nombre + ' ' + bombero.apellido}"></td>
+                        <td th:text="${bombero.username}"></td>
+                        <td th:text="${bombero.dni}"></td>
+                        <td th:text="${bombero.rol != null ? bombero.rol.nombre : 'Sin rol'}"></td>
+                        <td th:text="${bombero.telefono}"></td>
+                        <td>
+                            <a th:href="@{/bomberos/{id}/editar(id=${bombero.id})}" class="btn btn-sm btn-info">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#" th:data-url="@{/bomberos/{id}/eliminar(id=${bombero.id})}" class="btn btn-sm btn-danger btn-delete">
+    <i class="fas fa-trash"></i>
+</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="page-scripts">
+    <script>
+        $(function () {
+          // Inicialización de DataTables
+          $("#bomberosTable").DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+            }
+          });
+
+          $(document).on('click', '.btn-delete', function (e) {
+              e.preventDefault();
+
+              const deleteUrl = $(this).data('url');
+
+              Swal.fire({
+                  title: '¿Estás seguro?',
+                  text: "¡No podrás revertir esta acción!",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Sí, ¡eliminar!',
+                  cancelButtonText: 'Cancelar'
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      window.location.href = deleteUrl;
+                  }
+              });
+          });
+        });
+    </script>
+</th:block>
+</body>
+</html>

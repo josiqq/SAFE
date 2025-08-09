@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Formulario de Incidente</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title" th:if="${incidente.id == null}">Registrar Nuevo Incidente</h3>
+                    <h3 class="card-title" th:unless="${incidente.id == null}">Editar Incidente #<span th:text="${incidente.id}"></span></h3>
+                </div>
+                <form th:action="${incidente.id == null} ? @{/incidentes} : @{/incidentes/{id}(id=${incidente.id})}"
+                      th:object="${incidente}"
+                      method="post">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="tipo">Tipo de Incidente</label>
+                            <input type="text" class="form-control" id="tipo" th:field="*{tipo}" placeholder="Ej: Incendio estructural, Rescate vehicular" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ubicacion">Ubicación</label>
+                            <input type="text" class="form-control" id="ubicacion" th:field="*{ubicacion}" placeholder="Dirección exacta del suceso" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fechaHoraInicio">Fecha y Hora de Inicio</label>
+                            <input type="datetime-local" class="form-control" id="fechaHoraInicio" th:field="*{fechaHoraInicio}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <select class="form-control" id="estado" th:field="*{estado}">
+                                <option value="Activo">Activo</option>
+                                <option value="Cerrado">Cerrado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="descripcion">Descripción</label>
+                            <textarea class="form-control" id="descripcion" rows="4" th:field="*{descripcion}" placeholder="Breve descripción de la situación"></textarea>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <a th:href="@{/incidentes}" class="btn btn-secondary">Volver a la Lista</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-5" th:if="${incidente.id != null}">
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title">Registro Fotográfico</h3>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/incidentes/{id}/fotos(id=${incidente.id})}" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="archivoFoto">Añadir nueva foto</label>
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="archivoFoto" name="archivoFoto" required>
+                                    <label class="custom-file-label" for="archivoFoto">Seleccionar archivo...</label>
+                                </div>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="submit">Subir</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <hr>
+                <div class="card-body">
+                    <h5>Fotos Actuales</h5>
+                    <div th:if="${incidente.fotos == null or incidente.fotos.empty}">
+                        <p class="text-muted">No hay fotos registradas para este incidente.</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3" th:each="foto : ${incidente.fotos}">
+                            <img th:src="@{/fotos/{filename}(filename=${foto.nombreArchivo})}" class="img-fluid rounded" alt="Foto del incidente">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

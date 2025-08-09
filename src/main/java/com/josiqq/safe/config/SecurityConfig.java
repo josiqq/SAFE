@@ -22,7 +22,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authz -> authz
                 // Permitimos el acceso sin login a recursos estáticos y a la página de login
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/login").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/images/**","/dist/**", "/plugins/**", "/login").permitAll()
                 // Cualquier otra petición requiere autenticación
                 .anyRequest().authenticated()
             )

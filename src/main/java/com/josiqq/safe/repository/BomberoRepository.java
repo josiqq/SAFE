@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface BomberoRepository extends JpaRepository<Bombero, Long> {
-    Optional<Bombero> findByEmail(String email);
+    Optional<Bombero> findByUsername(String username);
 }
