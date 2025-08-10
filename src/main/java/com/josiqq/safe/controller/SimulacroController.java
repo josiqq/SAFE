@@ -1,7 +1,7 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.EvaluacionSimulacro;
-import com.josiqq.safe.models.Simulacro;
+import com.josiqq.safe.model.EvaluacionSimulacro;
+import com.josiqq.safe.model.Simulacro;
 import com.josiqq.safe.service.BomberoService;
 import com.josiqq.safe.service.EvaluacionSimulacroService;
 import com.josiqq.safe.service.SimulacroService;

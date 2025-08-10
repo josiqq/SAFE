@@ -1,6 +1,6 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Auditoria;
+import com.josiqq.safe.model.Auditoria;
 import com.josiqq.safe.service.AuditoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

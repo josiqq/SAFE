@@ -1,6 +1,6 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.BitacoraPostMision;
+import com.josiqq.safe.model.BitacoraPostMision;
 import com.josiqq.safe.service.BitacoraPostMisionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

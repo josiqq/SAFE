@@ -1,7 +1,9 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Bombero;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Bombero;
+
 import java.util.Optional;
 
 public interface BomberoRepository extends JpaRepository<Bombero, Long> {

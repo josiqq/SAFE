@@ -1,8 +1,10 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.EvaluacionDesempeno;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.EvaluacionDesempeno;
+
 import java.util.List;
 
 public interface EvaluacionDesempenoRepository extends JpaRepository<EvaluacionDesempeno, Long> {

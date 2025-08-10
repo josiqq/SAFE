@@ -1,8 +1,10 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.Certificado;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.Certificado;
+
 import java.util.Date;
 import java.util.List;
 

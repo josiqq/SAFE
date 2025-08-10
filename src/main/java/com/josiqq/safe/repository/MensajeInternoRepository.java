@@ -1,10 +1,11 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.MensajeInterno;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.MensajeInterno;
 
 import java.util.List;
 

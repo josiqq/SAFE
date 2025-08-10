@@ -1,9 +1,11 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.DocumentoInterno;
-import com.josiqq.safe.models.DocumentoInterno.TipoDocumento;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.DocumentoInterno;
+import com.josiqq.safe.model.DocumentoInterno.TipoDocumento;
+
 import java.util.List;
 
 public interface DocumentoInternoRepository extends JpaRepository<DocumentoInterno, Long> {

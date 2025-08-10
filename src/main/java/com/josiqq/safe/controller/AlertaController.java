@@ -1,6 +1,6 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Alerta;
+import com.josiqq.safe.model.Alerta;
 import com.josiqq.safe.service.AlertaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title th:if="${equipo.id == null}">Nuevo Equipo</title>
+    <title th:unless="${equipo.id == null}">Editar Equipo</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 th:if="${equipo.id == null}">Registrar Nuevo Equipo</h1>
+                    <h1 th:unless="${equipo.id == null}">Editar Equipo</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{/equipos}">Equipos</a></li>
+                        <li class="breadcrumb-item active" th:if="${equipo.id == null}">Nuevo</li>
+                        <li class="breadcrumb-item active" th:unless="${equipo.id == null}">Editar</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Datos del Equipo</h3>
+                        </div>
+                        <form th:action="${equipo.id == null} ? @{/equipos} : @{/equipos/{id}(id=${equipo.id})}"
+                              th:object="${equipo}"
+                              method="post">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="nombre">Nombre</label>
+                                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="descripcion">Descripción</label>
+                                    <input type="text" class="form-control" id="descripcion" th:field="*{descripcion}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="estado">Estado</label>
+                                    <input type="text" class="form-control" id="estado" th:field="*{estado}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ubicacion">Ubicación</label>
+                                    <input type="text" class="form-control" id="ubicacion" th:field="*{ubicacion}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fechaAdquisicion">Fecha de Adquisición</label>
+                                    <input type="date" class="form-control" id="fechaAdquisicion" th:field="*{fechaAdquisicion}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fechaUltimoMantenimiento">Fecha del último mantenimiento</label>
+                                    <input type="date" class="form-control" id="fechaUltimoMantenimiento" th:field="*{fechaUltimoMantenimiento}">
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">Guardar</button>
+                                <a th:href="@{/equipos}" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+</body>
+</html>

@@ -1,9 +1,9 @@
 package com.josiqq.safe.service;
 
 import com.josiqq.safe.dto.MensajeDTO;
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.MensajeInterno;
-import com.josiqq.safe.models.Notificacion.TipoNotificacion;
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.MensajeInterno;
+import com.josiqq.safe.model.Notificacion.TipoNotificacion;
 import com.josiqq.safe.repository.MensajeInternoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

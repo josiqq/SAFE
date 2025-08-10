@@ -1,12 +1,12 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Capacitacion;
 import com.josiqq.safe.service.CapacitacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import com.josiqq.safe.model.Capacitacion;
 import com.josiqq.safe.service.BomberoService;
 
 @Controller

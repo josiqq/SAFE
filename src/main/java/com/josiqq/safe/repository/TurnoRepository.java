@@ -1,7 +1,9 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Turno;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Turno;
+
 import java.util.Optional;
 
 public interface TurnoRepository extends JpaRepository<Turno, Long> {

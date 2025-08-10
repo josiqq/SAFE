@@ -1,7 +1,7 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Asistencia;
-import com.josiqq.safe.models.Bombero;
+import com.josiqq.safe.model.Asistencia;
+import com.josiqq.safe.model.Bombero;
 import com.josiqq.safe.repository.AsistenciaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

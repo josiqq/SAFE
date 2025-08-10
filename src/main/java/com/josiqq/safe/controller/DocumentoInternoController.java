@@ -1,7 +1,5 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.DocumentoInterno;
 import com.josiqq.safe.service.DocumentoInternoService;
 
 import java.security.Principal;
@@ -11,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.DocumentoInterno;
 import com.josiqq.safe.service.BomberoService;
 
 @Controller

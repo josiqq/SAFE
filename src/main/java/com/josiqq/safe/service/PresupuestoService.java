@@ -1,6 +1,6 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Presupuesto;
+import com.josiqq.safe.model.Presupuesto;
 import com.josiqq.safe.repository.PresupuestoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

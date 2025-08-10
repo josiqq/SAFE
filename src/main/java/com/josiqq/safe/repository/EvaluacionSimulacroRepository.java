@@ -1,9 +1,11 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.EvaluacionSimulacro;
-import com.josiqq.safe.models.Simulacro;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.EvaluacionSimulacro;
+import com.josiqq.safe.model.Simulacro;
+
 import java.util.List;
 
 public interface EvaluacionSimulacroRepository extends JpaRepository<EvaluacionSimulacro, Long> {

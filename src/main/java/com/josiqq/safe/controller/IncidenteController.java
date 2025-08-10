@@ -1,6 +1,6 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Incidente;
+import com.josiqq.safe.model.Incidente;
 import com.josiqq.safe.service.IncidenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

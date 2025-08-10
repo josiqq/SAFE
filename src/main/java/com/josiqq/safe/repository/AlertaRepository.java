@@ -1,8 +1,10 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Alerta;
-import com.josiqq.safe.models.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Alerta;
+import com.josiqq.safe.model.Rol;
+
 import java.util.List;
 
 public interface AlertaRepository extends JpaRepository<Alerta, Long> {

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Formulario de Turno</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 th:if="${turno.id == null}">Crear Nuevo Turno</h1>
+                    <h1 th:unless="${turno.id == null}">Editar Turno</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{/turnos}">Turnos</a></li>
+                        <li class="breadcrumb-item active" th:if="${turno.id == null}">Nuevo</li>
+                        <li class="breadcrumb-item active" th:unless="${turno.id == null}">Editar</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                Configuración del Turno
+                            </h3>
+                        </div>
+                        <form th:action="${turno.id == null} ? @{/turnos} : @{/turnos/{id}(id=${turno.id})}"
+                              th:object="${turno}"
+                              method="post"
+                              onsubmit="return validarFormulario()">
+                            <div class="card-body">
+                                <!-- Información básica del turno -->
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label for="nombre">Nombre del Turno *</label>
+                                        <select class="form-control" id="nombre" th:field="*{nombre}" required onchange="actualizarHorarios()">
+                                            <option value="">Seleccionar turno...</option>
+                                            <option value="TURNO A">Turno A (Mañana)</option>
+                                            <option value="TURNO B">Turno B (Tarde)</option>
+                                            <option value="TURNO C">Turno C (Noche)</option>
+                                            <option value="TURNO ESPECIAL">Turno Especial</option>
+                                            <option value="GUARDIA">Guardia</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="horaInicio">Hora de Inicio *</label>
+                                        <input type="time" class="form-control" id="horaInicio" th:field="*{horaInicio}" required>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="horaFin">Hora de Fin *</label>
+                                        <input type="time" class="form-control" id="horaFin" th:field="*{horaFin}" required>
+                                    </div>
+                                </div>
+
+                                <!-- Información del turno -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="info-box bg-light">
+                                            <span class="info-box-icon bg-info">
+                                                <i class="fas fa-clock"></i>
+                                            </span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Duración del Turno</span>
+                                                <span class="info-box-number" id="duracionTurno">-</span>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-info" id="duracionProgress" style="width: 0%"></div>
+                                                </div>
+                                                <span class="progress-description" id="tipoTurno">Seleccione horarios para calcular</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Asignación de Bomberos -->
+                                <div class="form-group">
+                                    <label>Bomberos Asignados</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-header bg-light">
+                                                    <h6 class="mb-0">
+                                                        <i class="fas fa-users mr-2"></i>
+                                                        Bomberos Disponibles
+                                                    </h6>
+                                                    <div class="input-group mt-2">
+                                                        <input type="text" class="form-control form-control-sm" id="buscarDisponible" placeholder="Buscar bombero...">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                                                    <div id="bomberosDisponibles">
+                                                        <th:block th:each="bombero : ${bomberos}">
+                                                            <div class="form-check bombero-item" 
+                                                                 th:data-bombero-id="${bombero.id}"
+                                                                 th:data-bombero-nombre="${bombero.nombre + ' ' + bombero.apellido}"
+                                                                 th:data-bombero-rol="${bombero.rol != null ? bombero.rol.nombre : 'Sin rol'}">
+                                                                <input class="form-check-input" 
+                                                                       type="checkbox" 
+                                                                       th:id="'bombero_' + ${bombero.id}"
+                                                                       name="bomberoIds"
+                                                                       th:value="${bombero.id}"
+                                                                       th:checked="${turno.bomberos != null and turno.bomberos.contains(bombero)}"
+                                                                       onchange="actualizarContadores()">
+                                                                <label class="form-check-label" th:for="'bombero_' + ${bombero.id}">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <div>
+                                                                            <strong th:text="${bombero.nombre + ' ' + bombero.apellido}"></strong>
+                                                                            <br>
+                                                                            <small class="text-muted">
+                                                                                <i class="fas fa-id-badge mr-1"></i>
+                                                                                <span th:text="${bombero.rol != null ? bombero.rol.nombre : 'Sin rol'}"></span>
+                                                                                <span th:if="${bombero.dni}" class="ml-2">
+                                                                                    | DNI: <span th:text="${bombero.dni}"></span>
+                                                                                </span>
+                                                                            </small>
+                                                                        </div>
+                                                                        <div class="badge badge-primary badge-sm" th:if="${bombero.rol != null}" th:text="${bombero.rol.nombre}"></div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </th:block>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-header bg-success">
+                                                    <h6 class="mb-0 text-white">
+                                                        <i class="fas fa-check-circle mr-2"></i>
+                                                        Bomberos Seleccionados
+                                                        <span class="badge badge-light float-right" id="contadorSeleccionados">0</span>
+                                                    </h6>
+                                                </div>
+                                                <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                                                    <div id="bomberosSeleccionados">
+                                                        <p class="text-muted text-center mt-3">
+                                                            <i class="fas fa-arrow-left mr-2"></i>
+                                                            Seleccione bomberos de la lista
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Estadísticas del turno -->
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-info"><i class="fas fa-users"></i></span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Total Personal</span>
+                                                <span class="info-box-number" id="totalPersonal">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-warning"><i class="fas fa-user-tie"></i></span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Oficiales</span>
+                                                <span class="info-box-number" id="totalOficiales">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-success"><i class="fas fa-hard-hat"></i></span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Bomberos</span>
+                                                <span class="info-box-number" id="totalBomberos">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-danger"><i class="fas fa-user-md"></i></span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Paramédicos</span>
+                                                <span class="info-box-number" id="totalParamedicos">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save mr-2"></i>
+                                    Guardar Turno
+                                </button>
+                                <a th:href="@{/turnos}" class="btn btn-secondary">
+                                    <i class="fas fa-times mr-2"></i>
+                                    Cancelar
+                                </a>
+                                <button type="button" class="btn btn-info" onclick="previsualizarTurno()">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Previsualizar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Panel lateral de información -->
+                <div class="col-md-4">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Información de Turnos
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <h6><i class="fas fa-clock mr-2"></i>Horarios Estándar:</h6>
+                            <ul class="text-sm">
+                                <li><strong>Turno A (Mañana):</strong> 08:00 - 16:00</li>
+                                <li><strong>Turno B (Tarde):</strong> 16:00 - 00:00</li>
+                                <li><strong>Turno C (Noche):</strong> 00:00 - 08:00</li>
+                            </ul>
+                            
+                            <h6><i class="fas fa-users mr-2"></i>Recomendaciones:</h6>
+                            <ul class="text-sm">
+                                <li>Mínimo <strong>4 bomberos</strong> por turno</li>
+                                <li>Al menos <strong>1 oficial</strong> por turno</li>
+                                <li><strong>1 paramédico</strong> recomendado</li>
+                                <li>Balancear experiencia y nuevos elementos</li>
+                            </ul>
+
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <strong>Importante:</strong> Verifique que no haya conflictos de horarios con otros turnos del mismo bombero.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Previsualización del turno -->
+                    <div class="card card-secondary" id="previsualizacionCard" style="display: none;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-eye mr-2"></i>
+                                Previsualización
+                            </h3>
+                        </div>
+                        <div class="card-body" id="previsualizacionContent">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<th:block layout:fragment="page-scripts">
+    <script>
+        function validarFormulario() {
+            const nombre = document.getElementById('nombre').value;
+            const horaInicio = document.getElementById('horaInicio').value;
+            const horaFin = document.getElementById('horaFin').value;
+            
+            if (!nombre || !horaInicio || !horaFin) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos requeridos',
+                    text: 'Por favor complete todos los campos obligatorios'
+                });
+                return false;
+            }
+
+            // Validar que la hora de fin sea posterior a la hora de inicio
+            if (horaInicio >= horaFin && nombre !== 'TURNO C') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Horario inválido',
+                    text: 'La hora de fin debe ser posterior a la hora de inicio (excepto para turnos nocturnos)'
+                });
+                return false;
+            }
+
+            const bomberosSeleccionados = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            if (bomberosSeleccionados < 2) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Personal insuficiente',
+                    text: 'Debe asignar al menos 2 bomberos al turno'
+                });
+                return false;
+            }
+            
+            return true;
+        }
+
+        function actualizarHorarios() {
+            const nombre = document.getElementById('nombre').value;
+            const horaInicio = document.getElementById('horaInicio');
+            const horaFin = document.getElementById('horaFin');
+            
+            switch(nombre) {
+                case 'TURNO A':
+                    horaInicio.value = '08:00';
+                    horaFin.value = '16:00';
+                    break;
+                case 'TURNO B':
+                    horaInicio.value = '16:00';
+                    horaFin.value = '00:00';
+                    break;
+                case 'TURNO C':
+                    horaInicio.value = '00:00';
+                    horaFin.value = '08:00';
+                    break;
+                default:
+                    // No cambiar los horarios para turnos especiales
+                    break;
+            }
+            calcularDuracion();
+        }
+
+        function calcularDuracion() {
+            const horaInicio = document.getElementById('horaInicio').value;
+            const horaFin = document.getElementById('horaFin').value;
+            
+            if (horaInicio && horaFin) {
+                const inicio = new Date('2000-01-01T' + horaInicio + ':00');
+                let fin = new Date('2000-01-01T' + horaFin + ':00');
+                
+                // Si la hora de fin es menor que la de inicio, asumimos que es del día siguiente
+                if (fin <= inicio) {
+                    fin.setDate(fin.getDate() + 1);
+                }
+                
+                const duracionMs = fin - inicio;
+                const horas = Math.floor(duracionMs / (1000 * 60 * 60));
+                const minutos = Math.floor((duracionMs % (1000 * 60 * 60)) / (1000 * 60));
+                
+                document.getElementById('duracionTurno').textContent = `${horas}h ${minutos}m`;
+                
+                const porcentaje = (horas / 24) * 100;
+                document.getElementById('duracionProgress').style.width = porcentaje + '%';
+                
+                let tipoTurno = '';
+                if (horas <= 6) tipoTurno = 'Turno Corto';
+                else if (horas <= 10) tipoTurno = 'Turno Estándar';
+                else tipoTurno = 'Turno Extendido';
+                
+                document.getElementById('tipoTurno').textContent = tipoTurno;
+            }
+        }
+
+        function actualizarContadores() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const contadorSeleccionados = document.getElementById('contadorSeleccionados');
+            const bomberosSeleccionados = document.getElementById('bomberosSeleccionados');
+            
+            contadorSeleccionados.textContent = checkboxes.length;
+            
+            // Actualizar lista de seleccionados
+            bomberosSeleccionados.innerHTML = '';
+            
+            if (checkboxes.length === 0) {
+                bomberosSeleccionados.innerHTML = `
+                    <p class="text-muted text-center mt-3">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Seleccione bomberos de la lista
+                    </p>
+                `;
+            } else {
+                checkboxes.forEach(checkbox => {
+                    const bomberoItem = checkbox.closest('.bombero-item');
+                    const nombre = bomberoItem.dataset.bomberoNombre;
+                    const rol = bomberoItem.dataset.bomberoRol;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'mb-2 p-2 bg-light rounded';
+                    item.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${nombre}</strong>
+                                <br>
+                                <small class="text-muted">${rol}</small>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.bombero-item').querySelector('input').checked = false; actualizarContadores();">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    bomberosSeleccionados.appendChild(item);
+                });
+            }
+            
+            // Actualizar estadísticas
+            actualizarEstadisticas();
+        }
+
+        function actualizarEstadisticas() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            let totalPersonal = 0;
+            let totalOficiales = 0;
+            let totalBomberos = 0;
+            let totalParamedicos = 0;
+            
+            checkboxes.forEach(checkbox => {
+                const bomberoItem = checkbox.closest('.bombero-item');
+                const rol = bomberoItem.dataset.bomberoRol.toLowerCase();
+                
+                totalPersonal++;
+                
+                if (rol.includes('oficial') || rol.includes('jefe') || rol.includes('captain')) {
+                    totalOficiales++;
+                } else if (rol.includes('paramedico') || rol.includes('médico')) {
+                    totalParamedicos++;
+                } else {
+                    totalBomberos++;
+                }
+            });
+            
+            document.getElementById('totalPersonal').textContent = totalPersonal;
+            document.getElementById('totalOficiales').textContent = totalOficiales;
+            document.getElementById('totalBomberos').textContent = totalBomberos;
+            document.getElementById('totalParamedicos').textContent = totalParamedicos;
+        }
+
+        function previsualizarTurno() {
+            const nombre = document.getElementById('nombre').value;
+            const horaInicio = document.getElementById('horaInicio').value;
+            const horaFin = document.getElementById('horaFin').value;
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            
+            const card = document.getElementById('previsualizacionCard');
+            const content = document.getElementById('previsualizacionContent');
+            
+            let html = `
+                <h5><i class="fas fa-calendar-alt mr-2"></i>${nombre}</h5>
+                <p><i class="fas fa-clock mr-2"></i><strong>Horario:</strong> ${horaInicio} - ${horaFin}</p>
+                <p><i class="fas fa-users mr-2"></i><strong>Personal asignado:</strong> ${checkboxes.length} bomberos</p>
+                <hr>
+                <h6>Lista de Personal:</h6>
+                <ul class="list-unstyled">
+            `;
+            
+            checkboxes.forEach(checkbox => {
+                const bomberoItem = checkbox.closest('.bombero-item');
+                const nombre = bomberoItem.dataset.bomberoNombre;
+                const rol = bomberoItem.dataset.bomberoRol;
+                
+                html += `<li><i class="fas fa-user mr-2"></i>${nombre} - <small class="text-muted">${rol}</small></li>`;
+            });
+            
+            html += '</ul>';
+            
+            content.innerHTML = html;
+            card.style.display = 'block';
+        }
+
+        // Función de búsqueda
+        document.getElementById('buscarDisponible').addEventListener('input', function(e) {
+            const termino = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('#bomberosDisponibles .bombero-item');
+            
+            items.forEach(item => {
+                const nombre = item.dataset.bomberoNombre.toLowerCase();
+                const rol = item.dataset.bomberoRol.toLowerCase();
+                
+                if (nombre.includes(termino) || rol.includes(termino)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Event listeners
+        document.getElementById('horaInicio').addEventListener('change', calcularDuracion);
+        document.getElementById('horaFin').addEventListener('change', calcularDuracion);
+
+        // Inicializar contadores al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarContadores();
+            calcularDuracion();
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

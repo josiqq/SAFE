@@ -1,10 +1,12 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Mantenimiento;
-import com.josiqq.safe.models.Vehiculo;
-import com.josiqq.safe.models.Equipo;
-import com.josiqq.safe.models.Mantenimiento.TipoMantenimiento;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Equipo;
+import com.josiqq.safe.model.Mantenimiento;
+import com.josiqq.safe.model.Vehiculo;
+import com.josiqq.safe.model.Mantenimiento.TipoMantenimiento;
+
 import java.util.List;
 
 public interface MantenimientoRepository extends JpaRepository<Mantenimiento, Long> {

@@ -1,8 +1,10 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.BitacoraPostMision;
-import com.josiqq.safe.models.Incidente;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.BitacoraPostMision;
+import com.josiqq.safe.model.Incidente;
+
 import java.util.Optional;
 
 public interface BitacoraPostMisionRepository extends JpaRepository<BitacoraPostMision, Long> {

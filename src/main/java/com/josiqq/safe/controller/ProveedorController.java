@@ -1,6 +1,6 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Proveedor;
+import com.josiqq.safe.model.Proveedor;
 import com.josiqq.safe.service.ProveedorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

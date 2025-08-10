@@ -1,6 +1,6 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Capacitacion;
+import com.josiqq.safe.model.Capacitacion;
 import com.josiqq.safe.repository.CapacitacionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

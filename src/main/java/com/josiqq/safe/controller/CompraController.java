@@ -1,6 +1,6 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Compra;
+import com.josiqq.safe.model.Compra;
 import com.josiqq.safe.service.CompraService;
 import com.josiqq.safe.service.ProveedorService;
 import org.springframework.beans.factory.annotation.Autowired;

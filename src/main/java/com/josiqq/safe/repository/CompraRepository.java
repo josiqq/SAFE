@@ -1,8 +1,10 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Compra;
-import com.josiqq.safe.models.Proveedor;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Compra;
+import com.josiqq.safe.model.Proveedor;
+
 import java.util.Date;
 import java.util.List;
 

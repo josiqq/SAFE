@@ -1,7 +1,7 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Compra;
-import com.josiqq.safe.models.Proveedor;
+import com.josiqq.safe.model.Compra;
+import com.josiqq.safe.model.Proveedor;
 import com.josiqq.safe.repository.CompraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

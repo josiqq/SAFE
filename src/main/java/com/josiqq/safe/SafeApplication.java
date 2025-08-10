@@ -1,6 +1,6 @@
 package com.josiqq.safe;
 
-import com.josiqq.safe.models.Bombero;
+import com.josiqq.safe.model.Bombero;
 import com.josiqq.safe.service.BomberoService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

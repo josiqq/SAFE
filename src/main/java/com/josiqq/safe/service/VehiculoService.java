@@ -1,6 +1,6 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Vehiculo;
+import com.josiqq.safe.model.Vehiculo;
 import com.josiqq.safe.repository.VehiculoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,4 +47,5 @@ public class VehiculoService {
     public List<Vehiculo> findByEstado(String estado) {
         return vehiculoRepository.findByEstado(estado);
     }
+
 }

@@ -1,6 +1,6 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Rol;
+import com.josiqq.safe.model.Rol;
 import com.josiqq.safe.repository.RolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

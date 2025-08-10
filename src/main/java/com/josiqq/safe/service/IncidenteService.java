@@ -1,7 +1,7 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Foto;
-import com.josiqq.safe.models.Incidente;
+import com.josiqq.safe.model.Foto;
+import com.josiqq.safe.model.Incidente;
 import com.josiqq.safe.repository.FotoRepository;
 import com.josiqq.safe.repository.IncidenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;

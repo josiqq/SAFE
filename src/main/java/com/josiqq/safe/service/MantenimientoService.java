@@ -1,9 +1,9 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Mantenimiento;
-import com.josiqq.safe.models.Mantenimiento.TipoMantenimiento;
-import com.josiqq.safe.models.Vehiculo;
-import com.josiqq.safe.models.Equipo;
+import com.josiqq.safe.model.Equipo;
+import com.josiqq.safe.model.Mantenimiento;
+import com.josiqq.safe.model.Vehiculo;
+import com.josiqq.safe.model.Mantenimiento.TipoMantenimiento;
 import com.josiqq.safe.repository.MantenimientoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

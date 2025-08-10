@@ -1,8 +1,8 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.EvaluacionSimulacro;
-import com.josiqq.safe.models.Simulacro;
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.EvaluacionSimulacro;
+import com.josiqq.safe.model.Simulacro;
 import com.josiqq.safe.repository.EvaluacionSimulacroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

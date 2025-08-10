@@ -1,7 +1,9 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Capacitacion;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Capacitacion;
+
 import java.util.Date;
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.DenunciaPublica;
+import com.josiqq.safe.model.DenunciaPublica;
 import com.josiqq.safe.repository.DenunciaPublicaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

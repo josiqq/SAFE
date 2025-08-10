@@ -1,7 +1,7 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.MensajeInterno;
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.MensajeInterno;
 import com.josiqq.safe.service.BomberoService;
 import com.josiqq.safe.service.MensajeInternoService;
 import org.springframework.beans.factory.annotation.Autowired;

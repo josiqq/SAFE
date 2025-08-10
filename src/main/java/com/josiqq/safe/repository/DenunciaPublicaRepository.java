@@ -1,7 +1,9 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.DenunciaPublica;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.DenunciaPublica;
+
 import java.util.List;
 
 public interface DenunciaPublicaRepository extends JpaRepository<DenunciaPublica, Long> {

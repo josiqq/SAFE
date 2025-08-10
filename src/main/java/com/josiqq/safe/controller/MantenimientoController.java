@@ -1,6 +1,6 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Mantenimiento;
+import com.josiqq.safe.model.Mantenimiento;
 import com.josiqq.safe.service.EquipoService;
 import com.josiqq.safe.service.MantenimientoService;
 import com.josiqq.safe.service.VehiculoService;

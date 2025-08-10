@@ -1,7 +1,7 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.Certificado;
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.Certificado;
 import com.josiqq.safe.service.BomberoService;
 import com.josiqq.safe.service.CertificadoService;
 import org.springframework.beans.factory.annotation.Autowired;

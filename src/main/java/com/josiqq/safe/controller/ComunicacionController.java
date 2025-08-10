@@ -1,10 +1,10 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.Comunicacion;
-import com.josiqq.safe.models.Incidente;
 import com.josiqq.safe.service.ComunicacionService;
 import com.josiqq.safe.service.IncidenteService;
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.Comunicacion;
+import com.josiqq.safe.model.Incidente;
 import com.josiqq.safe.service.BomberoService;
 
 import java.security.Principal;

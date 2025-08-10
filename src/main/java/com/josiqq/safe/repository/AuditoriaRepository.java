@@ -1,7 +1,9 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Auditoria;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Auditoria;
+
 import java.time.LocalDateTime;
 import java.util.List;
 

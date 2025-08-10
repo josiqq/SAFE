@@ -1,8 +1,8 @@
 package com.josiqq.safe.controller;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.Notificacion;
 import com.josiqq.safe.service.NotificacionService;
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.Notificacion;
 import com.josiqq.safe.service.BomberoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

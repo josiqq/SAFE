@@ -1,8 +1,8 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.DocumentoInterno;
-import com.josiqq.safe.models.DocumentoInterno.TipoDocumento;
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.DocumentoInterno;
+import com.josiqq.safe.model.DocumentoInterno.TipoDocumento;
 import com.josiqq.safe.repository.DocumentoInternoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

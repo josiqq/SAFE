@@ -1,7 +1,9 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Incidente;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Incidente;
+
 import java.util.List;
 import java.util.Date;
 

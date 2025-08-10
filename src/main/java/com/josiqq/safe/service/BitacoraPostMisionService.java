@@ -1,7 +1,7 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.BitacoraPostMision;
-import com.josiqq.safe.models.Incidente;
+import com.josiqq.safe.model.BitacoraPostMision;
+import com.josiqq.safe.model.Incidente;
 import com.josiqq.safe.repository.BitacoraPostMisionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

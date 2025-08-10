@@ -1,6 +1,6 @@
 package com.josiqq.safe.service;
 
-import com.josiqq.safe.models.Simulacro;
+import com.josiqq.safe.model.Simulacro;
 import com.josiqq.safe.repository.SimulacroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

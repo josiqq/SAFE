@@ -1,9 +1,11 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Asistencia;
-import com.josiqq.safe.models.Asistencia.EstadoAsistencia;
-import com.josiqq.safe.models.Bombero;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Asistencia;
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.Asistencia.EstadoAsistencia;
+
 import java.time.LocalDate;
 import java.util.List;
 

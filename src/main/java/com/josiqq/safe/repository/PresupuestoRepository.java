@@ -1,7 +1,9 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Presupuesto;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Presupuesto;
+
 import java.util.List;
 import java.util.Optional;
 

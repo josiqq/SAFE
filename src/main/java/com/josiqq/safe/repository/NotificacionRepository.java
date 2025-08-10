@@ -1,8 +1,10 @@
 package com.josiqq.safe.repository;
 
-import com.josiqq.safe.models.Bombero;
-import com.josiqq.safe.models.Notificacion;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.josiqq.safe.model.Bombero;
+import com.josiqq.safe.model.Notificacion;
+
 import java.util.List;
 
 public interface NotificacionRepository extends JpaRepository<Notificacion, Long> {

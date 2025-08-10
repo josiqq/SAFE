@@ -1,8 +1,9 @@
 package com.josiqq.safe.dto;
 
-import com.josiqq.safe.models.MensajeInterno;
 import lombok.Data;
 import java.time.LocalDateTime;
+
+import com.josiqq.safe.model.MensajeInterno;
 
 @Data
 public class MensajeDTO {
