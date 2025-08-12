@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -20,8 +20,8 @@ public class Incidente {
 
     private String tipo; // incendio, rescate, materiales peligrosos
     private String ubicacion;
-    private LocalDate fechaHoraInicio;
-    private LocalDate fechaHoraFin;
+    private LocalDateTime fechaHoraInicio;
+    private LocalDateTime fechaHoraFin;
     private String descripcion;
     private String estado; // Activo, cerrado
 

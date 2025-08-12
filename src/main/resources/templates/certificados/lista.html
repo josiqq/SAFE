@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>Listado de Mantenimientos</title>
+    <title>Listado de Certificados</title>
 </head>
 <body>
 
@@ -12,12 +12,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Mantenimientos</h1>
+                    <h1>Certificados</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
-                        <li class="breadcrumb-item active">Mantenimientos</li>
+                        <li class="breadcrumb-item"><a th:href="@{/bomberos}">Personal</a></li>
+                        <li class="breadcrumb-item active" th:text="'Certificados de ' + ${bombero.nombreCompleto}"></li>
                     </ol>
                 </div>
             </div>
@@ -26,40 +26,36 @@
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
-                <h3 class="card-title">Mantenimientos registrados</h3>
-                <a th:href="@{/mantenimientos/nuevo}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Registrar Nuevo Mantenimiento
+                <h3 class="card-title" th:text="'Certificados de ' + ${bombero.nombre} + ' ' + ${bombero.apellido}"></h3>
+                <a th:href="@{/bomberos/{bomberoId}/certificados/nuevo(bomberoId=${bombero.id})}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Añadir Nuevo Certificado
                 </a>
             </div>
         </div>
         <div class="card-body">
-            <table id="mantenimientosTable" class="table table-bordered table-striped">
+            <table id="certificadosTable" class="table table-bordered table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Fecha</th>
-                        <th>Descripción</th>
-                        <th>Costo</th>
-                        <th>Tipo</th>
-                        <th>Vehículo</th>
-                        <th>Equipo</th>
+                        <th>Nombre</th>
+                        <th>Entidad Emisora</th>
+                        <th>Fecha Emisión</th>
+                        <th>Fecha Vencimiento</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="mantenimiento : ${mantenimientos}">
-                        <td th:text="${mantenimiento.id}"></td>
-                        <td th:text="${mantenimiento.fecha}"></td>
-                        <td th:text="${mantenimiento.descripcion}"></td>
-                        <td th:text="${mantenimiento.costo != null ? '$' + #numbers.formatDecimal(mantenimiento.costo, 0, 2) : 'N/A'}"></td>
-                        <td th:text="${mantenimiento.tipo}"></td>
-                        <td th:text="${mantenimiento.vehiculo != null ? mantenimiento.vehiculo.placa : 'N/A'}"></td>
-                        <td th:text="${mantenimiento.equipo != null ? mantenimiento.equipo.nombre : 'N/A'}"></td>
+                    <tr th:each="certificado : ${bombero.certificados}">
+                        <td th:text="${certificado.id}"></td>
+                        <td th:text="${certificado.nombre}"></td>
+                        <td th:text="${certificado.entidadEmisora}"></td>
+                        <td th:text="${certificado.fechaEmision != null ? #dates.format(certificado.fechaEmision, 'dd/MM/yyyy') : 'N/A'}"></td>
+                        <td th:text="${certificado.fechaVencimiento != null ? #dates.format(certificado.fechaVencimiento, 'dd/MM/yyyy') : 'N/A'}"></td>
                         <td>
-                            <a th:href="@{/mantenimientos/{id}/editar(id=${mantenimiento.id})}" class="btn btn-sm btn-info">
+                            <a th:href="@{/bomberos/{bomberoId}/certificados/{certificadoId}/editar(bomberoId=${bombero.id}, certificadoId=${certificado.id})}" class="btn btn-sm btn-info">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="#" th:data-url="@{/mantenimientos/{id}/eliminar(id=${mantenimiento.id})}" class="btn btn-sm btn-danger btn-delete">
+                            <a href="#" th:data-url="@{/bomberos/{bomberoId}/certificados/{certificadoId}/eliminar(bomberoId=${bombero.id}, certificadoId=${certificado.id})}" class="btn btn-sm btn-danger btn-delete">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>
@@ -73,8 +69,7 @@
 <th:block layout:fragment="page-scripts">
     <script>
         $(function () {
-          // Inicialización de DataTables
-          $("#mantenimientosTable").DataTable({
+          $("#certificadosTable").DataTable({
             "responsive": true,
             "lengthChange": false,
             "autoWidth": false,
@@ -85,7 +80,6 @@
 
           $(document).on('click', '.btn-delete', function (e) {
               e.preventDefault();
-
               const deleteUrl = $(this).data('url');
 
               Swal.fire({
@@ -99,7 +93,6 @@
                   cancelButtonText: 'Cancelar'
               }).then((result) => {
                   if (result.isConfirmed) {
-                      // Crear un formulario para enviar una petición POST
                       const form = $('<form></form>').attr({
                           method: 'post',
                           action: deleteUrl,

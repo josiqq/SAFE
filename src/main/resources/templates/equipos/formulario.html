@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org"
+<html lang="es" xmlns:th="http://www.thymeleaf.org" 
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title th:if="${equipo.id == null}">Nuevo Equipo</title>
-    <title th:unless="${equipo.id == null}">Editar Equipo</title>
+    <title>Formulario de Equipo</title>
 </head>
 <body>
 
@@ -30,51 +29,142 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-8">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Datos del Equipo</h3>
+                            <h3 class="card-title">
+                                <i class="fas fa-toolbox mr-2"></i>
+                                Datos del Equipo
+                            </h3>
                         </div>
                         <form th:action="${equipo.id == null} ? @{/equipos} : @{/equipos/{id}(id=${equipo.id})}"
                               th:object="${equipo}"
-                              method="post">
+                              method="post"
+                              onsubmit="return validarFormulario()">
                             <div class="card-body">
-                                <div class="form-group">
-                                    <label for="nombre">Nombre</label>
-                                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label for="nombre">Nombre *</label>
+                                        <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="estado">Estado *</label>
+                                        <select class="form-control" id="estado" th:field="*{estado}" required>
+                                            <option value="">Seleccionar estado...</option>
+                                            <option value="Optimo">Óptimo</option>
+                                            <option value="En reparación">En reparación</option>
+                                            <option value="Fuera de servicio">Fuera de servicio</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="ubicacion">Ubicación</label>
+                                        <input type="text" class="form-control" id="ubicacion" th:field="*{ubicacion}">
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="descripcion">Descripción</label>
-                                    <input type="text" class="form-control" id="descripcion" th:field="*{descripcion}">
+
+                                <div class="row">
+                                    <div class="form-group col-md-12">
+                                        <label for="descripcion">Descripción</label>
+                                        <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3"></textarea>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="estado">Estado</label>
-                                    <input type="text" class="form-control" id="estado" th:field="*{estado}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="ubicacion">Ubicación</label>
-                                    <input type="text" class="form-control" id="ubicacion" th:field="*{ubicacion}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="fechaAdquisicion">Fecha de Adquisición</label>
-                                    <input type="date" class="form-control" id="fechaAdquisicion" th:field="*{fechaAdquisicion}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="fechaUltimoMantenimiento">Fecha del último mantenimiento</label>
-                                    <input type="date" class="form-control" id="fechaUltimoMantenimiento" th:field="*{fechaUltimoMantenimiento}">
+
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        <label for="fechaAdquisicion">Fecha de Adquisición</label>
+                                        <input type="date" class="form-control" id="fechaAdquisicion" th:field="*{fechaAdquisicion}">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="fechaUltimoMantenimiento">Fecha de Último Mantenimiento</label>
+                                        <input type="date" class="form-control" id="fechaUltimoMantenimiento" th:field="*{fechaUltimoMantenimiento}">
+                                    </div>
                                 </div>
                             </div>
+                            
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Guardar</button>
-                                <a th:href="@{/equipos}" class="btn btn-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save mr-2"></i>
+                                    Guardar
+                                </button>
+                                <a th:href="@{/equipos}" class="btn btn-secondary">
+                                    <i class="fas fa-times mr-2"></i>
+                                    Cancelar
+                                </a>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Información
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-box bg-light">
+                                <span class="info-box-icon"><i class="fas fa-exclamation-triangle text-warning"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Importante</span>
+                                    <span class="info-box-number">Los campos marcados con * son obligatorios</span>
+                                </div>
+                            </div>
+                            
+                            <h6><i class="fas fa-list-ul mr-2"></i>Estados posibles:</h6>
+                            <ul class="text-sm">
+                                <li><strong>Óptimo:</strong> El equipo está en perfecto estado para su uso.</li>
+                                <li><strong>En reparación:</strong> El equipo está siendo reparado y no se puede utilizar.</li>
+                                <li><strong>Fuera de servicio:</strong> El equipo está inoperativo y requiere atención.</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 </div>
+
+<th:block layout:fragment="page-scripts">
+    <script>
+        function validarFormulario() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const estado = document.getElementById('estado').value;
+            
+            if (!nombre || !estado) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos requeridos',
+                    text: 'Por favor complete todos los campos obligatorios marcados con *'
+                });
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Agregar indicadores visuales de estado
+        document.getElementById('estado').addEventListener('change', function(e) {
+            const card = document.querySelector('.card-primary');
+            card.classList.remove('card-success', 'card-warning', 'card-danger');
+            
+            switch(e.target.value) {
+                case 'Optimo':
+                    card.classList.add('card-success');
+                    break;
+                case 'En reparación':
+                    card.classList.add('card-warning');
+                    break;
+                case 'Fuera de servicio':
+                    card.classList.add('card-danger');
+                    break;
+                default:
+                    card.classList.add('card-primary');
+            }
+        });
+    </script>
+</th:block>
 
 </body>
 </html>

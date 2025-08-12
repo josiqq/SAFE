@@ -1,6 +1,8 @@
 package com.josiqq.safe.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.josiqq.safe.model.Capacitacion;
 
@@ -29,4 +31,8 @@ public interface CapacitacionRepository extends JpaRepository<Capacitacion, Long
      * @return Una lista de capacitaciones pasadas.
      */
     List<Capacitacion> findByFechaBefore(Date fechaActual);
+    
+    @Query("SELECT c FROM Capacitacion c LEFT JOIN FETCH c.participantes WHERE c.id = :id")
+    Capacitacion findByIdWithParticipantes(@Param("id") Long id);
+
 }

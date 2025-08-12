@@ -49,8 +49,8 @@ public class TurnoService {
 
     // --- Métodos de lógica de negocio específicos ---
 
-    @Transactional(readOnly = true)
-    public Optional<Turno> findByNombre(String nombre) {
-        return turnoRepository.findByNombre(nombre);
-    }
+    public List<Turno> findAllWithBomberos() {
+    return turnoRepository.findAllWithBomberos();
+}
+
 }

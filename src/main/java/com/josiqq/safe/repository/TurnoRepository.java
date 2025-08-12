@@ -1,17 +1,17 @@
 package com.josiqq.safe.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.josiqq.safe.model.Turno;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TurnoRepository extends JpaRepository<Turno, Long> {
 
-    /**
-     * Busca un turno por su nombre.
-     * @param nombre El nombre del turno (ej: "Turno A").
-     * @return Un Optional que contendrá el turno si existe.
-     */
+    @Query("SELECT DISTINCT t FROM Turno t LEFT JOIN FETCH t.bomberos")
+    List<Turno> findAllWithBomberos();
+    
     Optional<Turno> findByNombre(String nombre);
 }
+

@@ -31,11 +31,12 @@ public class TurnoController {
         binder.setDisallowedFields("bomberos");
     }
 
-    @GetMapping
-    public String listarTurnos(Model model) {
-        model.addAttribute("turnos", turnoService.findAll());
-        return "turnos/lista";
-    }
+@GetMapping
+public String listarTurnos(Model model) {
+    model.addAttribute("turnos", turnoService.findAllWithBomberos());
+    return "turnos/lista";
+}
+
 
     @GetMapping("/nuevo")
     public String mostrarFormularioDeNuevoTurno(Model model) {

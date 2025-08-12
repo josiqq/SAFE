@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @Controller
 @RequestMapping("/mantenimientos")
@@ -25,7 +27,7 @@ public class MantenimientoController {
     @GetMapping
     public String listarMantenimientos(Model model) {
         model.addAttribute("mantenimientos", mantenimientoService.findAll());
-        return "mantenimientos/lista"; // /templates/mantenimientos/lista.html
+        return "mantenimientos/lista";
     }
 
     @GetMapping("/nuevo")
@@ -33,13 +35,28 @@ public class MantenimientoController {
         model.addAttribute("mantenimiento", new Mantenimiento());
         model.addAttribute("vehiculos", vehiculoService.findAll());
         model.addAttribute("equipos", equipoService.findAll());
-        return "mantenimientos/formulario"; // /templates/mantenimientos/formulario.html
+        return "mantenimientos/formulario";
+    }
+
+    @GetMapping("/{id}/editar")
+    public String mostrarFormularioDeEdicionDeMantenimiento(@PathVariable Long id, Model model) {
+        Mantenimiento mantenimiento = mantenimientoService.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mantenimiento no encontrado"));
+        model.addAttribute("mantenimiento", mantenimiento);
+        model.addAttribute("vehiculos", vehiculoService.findAll());
+        model.addAttribute("equipos", equipoService.findAll());
+        return "mantenimientos/formulario";
     }
 
     @PostMapping
     public String guardarMantenimiento(@ModelAttribute("mantenimiento") Mantenimiento mantenimiento) {
         mantenimientoService.save(mantenimiento);
-        // Aquí también deberías actualizar el estado del vehículo/equipo si es necesario
+        return "redirect:/mantenimientos";
+    }
+
+    @PostMapping("/{id}/eliminar")
+    public String eliminarMantenimiento(@PathVariable Long id) {
+        mantenimientoService.deleteById(id);
         return "redirect:/mantenimientos";
     }
 }

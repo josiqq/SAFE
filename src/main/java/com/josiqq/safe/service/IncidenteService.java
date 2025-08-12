@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @Service
 public class IncidenteService {
@@ -74,5 +75,37 @@ public class IncidenteService {
         // 3. Crear y guardar la entidad Foto en la base de datos
         Foto nuevaFoto = new Foto(nombreArchivo, incidente);
         return fotoRepository.save(nuevaFoto);
+    }
+
+    @Transactional
+    public List<Foto> agregarMultiplesFotosAIncidente(Long incidenteId, MultipartFile[] archivosFotos) {
+        // Encontrar el incidente al que pertenecen las fotos
+        Incidente incidente = incidenteRepository.findById(incidenteId)
+                .orElseThrow(() -> new RuntimeException("Incidente no encontrado con id: " + incidenteId));
+
+        List<Foto> fotosGuardadas = new ArrayList<>();
+
+        for (MultipartFile archivo : archivosFotos) {
+            if (!archivo.isEmpty()) {
+                try {
+                    // Guardar el archivo en el disco y obtener su nombre único
+                    String nombreArchivo = fileStorageService.store(archivo);
+                    
+                    // Crear y guardar la entidad Foto en la base de datos
+                    Foto nuevaFoto = new Foto(nombreArchivo, incidente);
+                    fotosGuardadas.add(fotoRepository.save(nuevaFoto));
+                } catch (Exception e) {
+                    // Log del error pero continuamos con las demás fotos
+                    System.err.println("Error al guardar foto: " + archivo.getOriginalFilename() + " - " + e.getMessage());
+                }
+            }
+        }
+
+        return fotosGuardadas;
+    }
+
+    @Transactional
+    public void eliminarFotoDeIncidente(Long fotoId) {
+        fotoRepository.deleteById(fotoId);
     }
 }

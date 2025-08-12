@@ -47,4 +47,8 @@ public class CapacitacionService {
     public List<Capacitacion> findCapacitacionesPasadas() {
         return capacitacionRepository.findByFechaBefore(new Date());
     }
+    
+    public Capacitacion obtenerConParticipantes(Long id) {
+        return capacitacionRepository.findByIdWithParticipantes(id);
+    }
 }

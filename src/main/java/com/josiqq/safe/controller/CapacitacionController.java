@@ -37,6 +37,13 @@ public class CapacitacionController {
         capacitacionService.save(capacitacion);
         return "redirect:/capacitaciones";
     }
+    
+    @GetMapping("/{id}/editar")
+    public String editarCapacitacion(@PathVariable Long id, Model model) {
+        Capacitacion capacitacion = capacitacionService.obtenerConParticipantes(id);
+        model.addAttribute("capacitacion", capacitacion);
+        return "capacitacion/formulario";
+    }
 
     @GetMapping("/{id}/eliminar")
     public String eliminarCapacitacion(@PathVariable Long id) {

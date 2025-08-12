@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Listado de Capacitaciones</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Capacitaciones Registradas</h3>
+                <a th:href="@{/capacitaciones/nueva}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Registrar Nueva Capacitación
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="capacitacionesTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="capacitacion : ${capacitaciones}">
+                        <td th:text="${capacitacion.id}"></td>
+                        <td th:text="${capacitacion.nombre}"></td>
+                        <td th:text="${capacitacion.descripcion}"></td>
+                        <td th:text="${capacitacion.fecha}"></td>
+                        <td th:text="${capacitacion.tipo}"></td>
+                        <td>
+                            <a th:href="@{/capacitaciones/{id}/editar(id=${capacitacion.id})}" class="btn btn-sm btn-info">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#" th:data-url="@{/capacitaciones/{id}/eliminar(id=${capacitacion.id})}" class="btn btn-sm btn-danger btn-delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="page-scripts">
+    <script>
+        $(function () {
+          // Inicialización de DataTables
+          $("#capacitacionesTable").DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+            }
+          });
+
+          $(document).on('click', '.btn-delete', function (e) {
+              e.preventDefault();
+
+              const deleteUrl = $(this).data('url');
+
+              Swal.fire({
+                  title: '¿Estás seguro?',
+                  text: "¡No podrás revertir esta acción!",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Sí, ¡eliminar!',
+                  cancelButtonText: 'Cancelar'
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      window.location.href = deleteUrl;
+                  }
+              });
+          });
+        });
+    </script>
+</th:block>
+</body>
+</html>

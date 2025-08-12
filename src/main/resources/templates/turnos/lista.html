@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Listado de Turnos</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Turnos Registrados</h3>
+                <a th:href="@{/turnos/nuevo}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Registrar Nuevo Turno
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="turnosTable" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Hora de Inicio</th>
+                        <th>Hora de Fin</th>
+                        <th>Bomberos Asignados</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="turno : ${turnos}">
+                        <td th:text="${turno.id}"></td>
+                        <td th:text="${turno.nombre}"></td>
+                        <td th:text="${turno.horaInicio}"></td>
+                        <td th:text="${turno.horaFin}"></td>
+                        <td>
+                            <ul th:if="${turno.bomberos != null and not #lists.isEmpty(turno.bomberos)}">
+                                <li th:each="bombero : ${turno.bomberos}" th:text="${bombero.nombre + ' ' + bombero.apellido}"></li>
+                            </ul>
+                            <span th:if="${turno.bomberos == null or #lists.isEmpty(turno.bomberos)}">Ninguno</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/turnos/{id}/editar(id=${turno.id})}" class="btn btn-sm btn-info">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:href="@{/turnos/{id}/detalle(id=${turno.id})}" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="#" th:data-url="@{/turnos/{id}/eliminar(id=${turno.id})}" class="btn btn-sm btn-danger btn-delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="page-scripts">
+    <script>
+        $(function () {
+          // Inicialización de DataTables
+          $("#turnosTable").DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+            }
+          });
+
+          $(document).on('click', '.btn-delete', function (e) {
+              e.preventDefault();
+
+              const deleteUrl = $(this).data('url');
+
+              Swal.fire({
+                  title: '¿Estás seguro?',
+                  text: "¡No podrás revertir esta acción!",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Sí, ¡eliminar!',
+                  cancelButtonText: 'Cancelar'
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      window.location.href = deleteUrl;
+                  }
+              });
+          });
+        });
+    </script>
+</th:block>
+</body>
+</html>

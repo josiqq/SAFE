@@ -26,6 +26,7 @@
                         <th>Ubicación</th>
                         <th>Fecha de Inicio</th>
                         <th>Estado</th>
+                        <th>Foto de Referencia</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -34,14 +35,20 @@
                         <td th:text="${incidente.id}"></td>
                         <td th:text="${incidente.tipo}"></td>
                         <td th:text="${incidente.ubicacion}"></td>
-                        <td th:text="${#dates.format(incidente.fechaHoraInicio, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${#temporals.format(incidente.fechaHoraInicio, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td th:text="${incidente.estado}"></td>
                         <td>
-                            <span th:text="${incidente.estado}"
-                                  th:classappend="${incidente.estado == 'Activo'} ? 'badge badge-danger' : 'badge badge-success'">
-                            </span>
+                            <div th:if="${incidente.fotos != null and not #lists.isEmpty(incidente.fotos)}">
+                                <img th:src="@{'/uploads/' + ${incidente.fotos[0].nombreArchivo}}" 
+                                     alt="Foto del incidente" 
+                                     style="width: 80px; height: 60px; object-fit: cover;">
+                            </div>
+                            <div th:unless="${incidente.fotos != null and not #lists.isEmpty(incidente.fotos)}">
+                                Sin foto
+                            </div>
                         </td>
                         <td>
-                            <a th:href="@{/incidentes/{id}(id=${incidente.id})}" class="btn btn-sm btn-primary" title="Ver Detalles">
+                            <a th:href="@{/incidentes/{id}(id=${incidente.id})}" class="btn btn-sm btn-secondary" title="Ver detalles">
                                 <i class="fas fa-eye"></i>
                             </a>
                             <a th:href="@{/incidentes/{id}/editar(id=${incidente.id})}" class="btn btn-sm btn-info" title="Editar">
@@ -59,8 +66,7 @@
 </div>
 
 <th:block layout:fragment="page-scripts">
-    <script th:inline="javascript">
-        /*<![CDATA[*/
+    <script>
         $(function () {
           // Inicialización de DataTables
           $("#incidentesTable").DataTable({
@@ -72,10 +78,11 @@
             }
           });
 
-          // Script para SweetAlert2
           $(document).on('click', '.btn-delete', function (e) {
               e.preventDefault();
+
               const deleteUrl = $(this).data('url');
+
               Swal.fire({
                   title: '¿Estás seguro?',
                   text: "¡No podrás revertir esta acción!",
@@ -92,9 +99,7 @@
               });
           });
         });
-        /*]]>*/
     </script>
 </th:block>
-
 </body>
 </html>

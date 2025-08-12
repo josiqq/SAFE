@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -19,7 +19,7 @@ public class Capacitacion {
 
     private String nombre;
     private String descripcion;
-    private Date fecha;
+    private LocalDate fecha;
     private String tipo; // Teórica, práctica, simulacro
 
     @ManyToMany
