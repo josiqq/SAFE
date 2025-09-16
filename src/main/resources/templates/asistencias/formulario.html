@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Registro de Asistencia</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>
+                        <i class="fas fa-clipboard-check mr-2"></i>
+                        Registrar Asistencia
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a th:href="@{/asistencias}">Asistencias</a></li>
+                        <li class="breadcrumb-item active">Registrar</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-user-check mr-2"></i>
+                                Datos de Asistencia
+                            </h3>
+                        </div>
+                        <form th:action="@{/asistencias}" th:object="${asistencia}" method="post" onsubmit="return validarFormulario()">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        <label for="bombero">Bombero *</label>
+                                        <select class="form-control select2" id="bombero" th:field="*{bombero.id}" required>
+                                            <option value="">Seleccionar bombero...</option>
+                                            <option th:each="bombero : ${bomberos}" 
+                                                    th:value="${bombero.id}" 
+                                                    th:text="${bombero.nombre + ' ' + bombero.apellido + ' (' + bombero.username + ')'}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="fecha">Fecha *</label>
+                                        <input type="date" class="form-control" id="fecha" th:field="*{fecha}" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label for="estado">Estado *</label>
+                                        <select class="form-control" id="estado" th:field="*{estado}" required>
+                                            <option value="">Seleccionar estado...</option>
+                                            <option value="PRESENTE">Presente</option>
+                                            <option value="AUSENTE">Ausente</option>
+                                            <option value="JUSTIFICADO">Justificado</option>
+                                            <option value="RETRASO">Retraso</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="turno">Turno</label>
+                                        <select class="form-control" id="turno" th:field="*{turno.id}">
+                                            <option value="">Sin turno asignado</option>
+                                            <option th:each="turno : ${turnos}" 
+                                                    th:value="${turno.id}" 
+                                                    th:text="${turno.nombre + ' (' + turno.horaInicio + ' - ' + turno.horaFin + ')'}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4" id="estadoIndicador">
+                                        <label>Estado Visual</label>
+                                        <div class="d-flex align-items-center h-100">
+                                            <span class="badge badge-secondary" id="estadoBadge">Sin seleccionar</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" id="horariosContainer" style="display: none;">
+                                    <div class="form-group col-md-6">
+                                        <label for="horaEntrada">Hora de Entrada</label>
+                                        <input type="time" class="form-control" id="horaEntrada" th:field="*{horaEntrada}">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="horaSalida">Hora de Salida</label>
+                                        <input type="time" class="form-control" id="horaSalida" th:field="*{horaSalida}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check mr-2"></i>
+                                    Registrar Asistencia
+                                </button>
+                                <a th:href="@{/asistencias}" class="btn btn-secondary">
+                                    <i class="fas fa-times mr-2"></i>
+                                    Cancelar
+                                </a>
+                                <button type="button" class="btn btn-info" onclick="registroRapido()">
+                                    <i class="fas fa-bolt mr-2"></i>
+                                    Presente Ahora
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <!-- Información del bombero seleccionado -->
+                    <div class="card card-info" id="infoBombero" style="display: none;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-user mr-2"></i>
+                                Información del Bombero
+                            </h3>
+                        </div>
+                        <div class="card-body" id="datosBombero">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Ayuda y estados -->
+                    <div class="card card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Estados de Asistencia
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="estados-info">
+                                <div class="mb-2">
+                                    <span class="badge badge-success">PRESENTE</span>
+                                    <small class="d-block text-muted">El bombero asistió normalmente</small>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="badge badge-danger">AUSENTE</span>
+                                    <small class="d-block text-muted">No se presentó sin justificación</small>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="badge badge-warning">JUSTIFICADO</span>
+                                    <small class="d-block text-muted">Falta con justificación válida</small>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="badge badge-info">RETRASO</span>
+                                    <small class="d-block text-muted">Llegó tarde pero asistió</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumen del día actual -->
+                    <div class="card card-light">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-calendar-day mr-2"></i>
+                                Resumen de Hoy
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 text-center">
+                                    <div class="info-box bg-success">
+                                        <span class="info-box-icon"><i class="fas fa-check"></i></span>
+                                        <div class="info-box-content">
+                                            <span class="info-box-text">Presentes</span>
+                                            <span class="info-box-number" id="presentesHoy">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <div class="info-box bg-danger">
+                                        <span class="info-box-icon"><i class="fas fa-times"></i></span>
+                                        <div class="info-box-content">
+                                            <span class="info-box-text">Ausentes</span>
+                                            <span class="info-box-number" id="ausentesHoy">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<th:block layout:fragment="page-scripts">
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2
+            $('.select2').select2({
+                theme: 'bootstrap4',
+                placeholder: 'Seleccionar bombero...'
+            });
+
+            // Establecer fecha actual por defecto
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = hoy;
+
+            // Cargar resumen del día
+            cargarResumenDelDia();
+        });
+
+        // Validar formulario
+        function validarFormulario() {
+            const bombero = document.getElementById('bombero').value;
+            const fecha = document.getElementById('fecha').value;
+            const estado = document.getElementById('estado').value;
+            
+            if (!bombero || !fecha || !estado) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos requeridos',
+                    text: 'Por favor complete todos los campos obligatorios'
+                });
+                return false;
+            }
+
+            // Validar que la fecha no sea futura
+            const fechaSeleccionada = new Date(fecha);
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+
+            if (fechaSeleccionada > hoy) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Fecha inválida',
+                    text: 'No se puede registrar asistencia para fechas futuras'
+                });
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Registro rápido - marcar presente ahora
+        function registroRapido() {
+            const bomberoSelect = document.getElementById('bombero');
+            if (!bomberoSelect.value) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Seleccione un bombero',
+                    text: 'Debe seleccionar un bombero primero'
+                });
+                return;
+            }
+
+            // Establecer valores automáticos
+            document.getElementById('estado').value = 'PRESENTE';
+            document.getElementById('horaEntrada').value = new Date().toTimeString().slice(0, 5);
+            
+            // Actualizar indicadores visuales
+            actualizarEstadoVisual('PRESENTE');
+            mostrarHorarios();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Listo',
+                text: 'Datos configurados para registro presente. Presione Registrar para guardar.',
+                timer: 2000
+            });
+        }
+
+        // Manejar cambios en el estado
+        document.getElementById('estado').addEventListener('change', function(e) {
+            const estado = e.target.value;
+            actualizarEstadoVisual(estado);
+            
+            if (estado === 'PRESENTE' || estado === 'RETRASO') {
+                mostrarHorarios();
+            } else {
+                ocultarHorarios();
+            }
+        });
+
+        // Actualizar indicador visual del estado
+        function actualizarEstadoVisual(estado) {
+            const badge = document.getElementById('estadoBadge');
+            badge.classList.remove('badge-success', 'badge-danger', 'badge-warning', 'badge-info', 'badge-secondary');
+            
+            switch(estado) {
+                case 'PRESENTE':
+                    badge.classList.add('badge-success');
+                    badge.textContent = 'PRESENTE';
+                    break;
+                case 'AUSENTE':
+                    badge.classList.add('badge-danger');
+                    badge.textContent = 'AUSENTE';
+                    break;
+                case 'JUSTIFICADO':
+                    badge.classList.add('badge-warning');
+                    badge.textContent = 'JUSTIFICADO';
+                    break;
+                case 'RETRASO':
+                    badge.classList.add('badge-info');
+                    badge.textContent = 'RETRASO';
+                    break;
+                default:
+                    badge.classList.add('badge-secondary');
+                    badge.textContent = 'Sin seleccionar';
+            }
+        }
+
+        // Mostrar/ocultar campos de horarios
+        function mostrarHorarios() {
+            document.getElementById('horariosContainer').style.display = 'block';
+        }
+
+        function ocultarHorarios() {
+            document.getElementById('horariosContainer').style.display = 'none';
+            document.getElementById('horaEntrada').value = '';
+            document.getElementById('horaSalida').value = '';
+        }
+
+        // Cargar información del bombero seleccionado
+        document.getElementById('bombero').addEventListener('change', function(e) {
+            const bomberoId = e.target.value;
+            if (bomberoId) {
+                cargarInfoBombero(bomberoId);
+            } else {
+                document.getElementById('infoBombero').style.display = 'none';
+            }
+        });
+
+        // Función para cargar información del bombero (simulada)
+        function cargarInfoBombero(bomberoId) {
+            // En una implementación real, esto haría una llamada AJAX
+            const infoBombero = document.getElementById('infoBombero');
+            const datosBombero = document.getElementById('datosBombero');
+            
+            // Simular datos del bombero
+            datosBombero.innerHTML = `
+                <div class="user-panel d-flex">
+                    <div class="image">
+                        <div class="img-circle bg-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                    </div>
+                    <div class="info ml-3">
+                        <p class="mb-1"><strong>Cargando...</strong></p>
+                        <small class="text-muted">Información del bombero</small>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-sm">
+                    <p><i class="fas fa-clock mr-2"></i>Último registro: <span class="text-muted">Consultando...</span></p>
+                    <p><i class="fas fa-calendar mr-2"></i>Asistencias este mes: <span class="text-muted">Calculando...</span></p>
+                </div>
+            `;
+            
+            infoBombero.style.display = 'block';
+        }
+
+        // Cargar resumen del día actual
+        function cargarResumenDelDia() {
+            // En una implementación real, esto haría una llamada AJAX
+            // Por ahora valores simulados
+            document.getElementById('presentesHoy').textContent = '12';
+            document.getElementById('ausentesHoy').textContent = '3';
+        }
+    </script>
+</th:block>
+
+</body>
+</html>

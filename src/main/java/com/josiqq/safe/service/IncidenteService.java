@@ -20,16 +20,11 @@ public class IncidenteService {
     @Autowired
     private IncidenteRepository incidenteRepository;
 
-    // Inyectaremos otros servicios aquí cuando necesitemos coordinarlos
     @Autowired
     private FileStorageService fileStorageService;
 
     @Autowired
     private FotoRepository fotoRepository;
-    // @Autowired
-    // private BomberoService bomberoService;
-    // @Autowired
-    // private VehiculoService vehiculoService;
 
     @Transactional(readOnly = true)
     public List<Incidente> findAll() {
@@ -90,13 +85,14 @@ public class IncidenteService {
                 try {
                     // Guardar el archivo en el disco y obtener su nombre único
                     String nombreArchivo = fileStorageService.store(archivo);
-                    
+
                     // Crear y guardar la entidad Foto en la base de datos
                     Foto nuevaFoto = new Foto(nombreArchivo, incidente);
                     fotosGuardadas.add(fotoRepository.save(nuevaFoto));
                 } catch (Exception e) {
                     // Log del error pero continuamos con las demás fotos
-                    System.err.println("Error al guardar foto: " + archivo.getOriginalFilename() + " - " + e.getMessage());
+                    System.err.println(
+                            "Error al guardar foto: " + archivo.getOriginalFilename() + " - " + e.getMessage());
                 }
             }
         }
@@ -107,5 +103,9 @@ public class IncidenteService {
     @Transactional
     public void eliminarFotoDeIncidente(Long fotoId) {
         fotoRepository.deleteById(fotoId);
+    }
+
+    public long count() {
+        return incidenteRepository.count();
     }
 }

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Control de Asistencias</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>
+                        <i class="fas fa-clipboard-check mr-2"></i>
+                        Control de Asistencias
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                        <li class="breadcrumb-item active">Asistencias</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Filtros y controles -->
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-filter mr-2"></i>
+                                Filtros de Búsqueda
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="get" th:action="@{/asistencias}" class="form-inline">
+                                <div class="form-group mr-3">
+                                    <label for="fecha" class="mr-2">Fecha:</label>
+                                    <input type="date" class="form-control" id="fecha" name="fecha" 
+                                           th:value="${fechaSeleccionada}">
+                                </div>
+                                <button type="submit" class="btn btn-primary mr-2">
+                                    <i class="fas fa-search mr-1"></i>
+                                    Buscar
+                                </button>
+                                <a th:href="@{/asistencias}" class="btn btn-secondary mr-2">
+                                    <i class="fas fa-times mr-1"></i>
+                                    Limpiar
+                                </a>
+                                <button type="button" class="btn btn-info" onclick="irAHoy()">
+                                    <i class="fas fa-calendar-day mr-1"></i>
+                                    Hoy
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-plus mr-2"></i>
+                                Acciones Rápidas
+                            </h3>
+                        </div>
+                        <div class="card-body text-center">
+                            <a th:href="@{/asistencias/registrar}" class="btn btn-success btn-lg">
+                                <i class="fas fa-user-check mr-2"></i>
+                                Registrar Asistencia
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas del día -->
+            <div class="row mb-3">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3 id="totalPresentes">
+                                <span th:text="${#lists.size(asistencias.?[estado.name() == 'PRESENTE'])}">0</span>
+                            </h3>
+                            <p>Presentes</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3 id="totalAusentes">
+                                <span th:text="${#lists.size(asistencias.?[estado.name() == 'AUSENTE'])}">0</span>
+                            </h3>
+                            <p>Ausentes</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-times"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3 id="totalJustificados">
+                                <span th:text="${#lists.size(asistencias.?[estado.name() == 'JUSTIFICADO'])}">0</span>
+                            </h3>
+                            <p>Justificados</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3 id="totalRetrasos">
+                                <span th:text="${#lists.size(asistencias.?[estado.name() == 'RETRASO'])}">0</span>
+                            </h3>
+                            <p>Retrasos</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-minus"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de asistencias -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title">
+                            <i class="fas fa-list mr-2"></i>
+                            Asistencias del 
+                            <span th:text="${#temporals.format(fechaSeleccionada, 'dd/MM/yyyy')}">día</span>
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fas fa-download mr-1"></i>
+                                    Exportar
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#" onclick="exportarExcel()">
+                                        <i class="fas fa-file-excel mr-2"></i>Excel
+                                    </a>
+                                    <a class="dropdown-item" href="#" onclick="exportarPDF()">
+                                        <i class="fas fa-file-pdf mr-2"></i>PDF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="asistenciasTable" class="table table-bordered table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Bombero</th>
+                                    <th>Username</th>
+                                    <th>Turno</th>
+                                    <th>Estado</th>
+                                    <th>Hora Entrada</th>
+                                    <th>Hora Salida</th>
+                                    <th>Fecha</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="asistencia : ${asistencias}">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar mr-2">
+                                                <div class="img-circle bg-primary d-flex align-items-center justify-content-center" 
+                                                     style="width: 30px; height: 30px; font-size: 12px;">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <strong th:text="${asistencia.bombero.nombre + ' ' + asistencia.bombero.apellido}">Nombre</strong>
+                                                <div class="text-muted small" th:text="${asistencia.bombero.rol?.nombre}">Rol</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-light" th:text="${asistencia.bombero.username}">username</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${asistencia.turno}" 
+                                              th:text="${asistencia.turno.nombre}"
+                                              class="badge badge-info">Turno</span>
+                                        <span th:unless="${asistencia.turno}" 
+                                              class="text-muted">Sin turno</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span th:switch="${asistencia.estado.name()}">
+                                            <span th:case="'PRESENTE'" class="badge badge-success">
+                                                <i class="fas fa-check mr-1"></i>Presente
+                                            </span>
+                                            <span th:case="'AUSENTE'" class="badge badge-danger">
+                                                <i class="fas fa-times mr-1"></i>Ausente
+                                            </span>
+                                            <span th:case="'JUSTIFICADO'" class="badge badge-warning">
+                                                <i class="fas fa-exclamation-triangle mr-1"></i>Justificado
+                                            </span>
+                                            <span th:case="'RETRASO'" class="badge badge-info">
+                                                <i class="fas fa-clock mr-1"></i>Retraso
+                                            </span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${asistencia.horaEntrada}" 
+                                              th:text="${#temporals.format(asistencia.horaEntrada, 'HH:mm')}"
+                                              class="text-success">
+                                        </span>
+                                        <span th:unless="${asistencia.horaEntrada}" 
+                                              class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${asistencia.horaSalida}" 
+                                              th:text="${#temporals.format(asistencia.horaSalida, 'HH:mm')}"
+                                              class="text-danger">
+                                        </span>
+                                        <span th:unless="${asistencia.horaSalida}" 
+                                              class="text-muted">-</span>
+                                    </td>
+                                    <td th:text="${#temporals.format(asistencia.fecha, 'dd/MM/yyyy')}">Fecha</td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm">
+                                            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="#" 
+                                                   th:onclick="'editarAsistencia(' + ${asistencia.id} + ')'">
+                                                    <i class="fas fa-edit mr-2"></i>Editar
+                                                </a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item text-danger" href="#" 
+                                                   th:onclick="'eliminarAsistencia(' + ${asistencia.id} + ')'">
+                                                    <i class="fas fa-trash mr-2"></i>Eliminar
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Mensaje si no hay datos -->
+                    <div th:if="${#lists.isEmpty(asistencias)}" class="text-center py-4">
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No hay registros de asistencia</h5>
+                            <p class="text-muted">
+                                No se encontraron asistencias para la fecha seleccionada.
+                            </p>
+                            <a th:href="@{/asistencias/registrar}" class="btn btn-primary">
+                                <i class="fas fa-plus mr-2"></i>
+                                Registrar Primera Asistencia
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para editar asistencia -->
+<div class="modal fade" id="editarAsistenciaModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fas fa-edit mr-2"></i>
+                    Editar Asistencia
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarAsistencia">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Estado</label>
+                                <select class="form-control" id="editEstado">
+                                    <option value="PRESENTE">Presente</option>
+                                    <option value="AUSENTE">Ausente</option>
+                                    <option value="JUSTIFICADO">Justificado</option>
+                                    <option value="RETRASO">Retraso</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Turno</label>
+                                <select class="form-control" id="editTurno">
+                                    <option value="">Sin turno</option>
+                                    <!-- Se llenarán dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Hora de Entrada</label>
+                                <input type="time" class="form-control" id="editHoraEntrada">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Hora de Salida</label>
+                                <input type="time" class="form-control" id="editHoraSalida">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times mr-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" onclick="guardarCambios()">
+                    <i class="fas fa-save mr-2"></i>Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="page-scripts">
+    <script>
+        let asistenciaIdActual = null;
+
+        $(document).ready(function() {
+            // Inicializar DataTable
+            $("#asistenciasTable").DataTable({
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "pageLength": 25,
+                "language": {
+                    "url": "http://localhost:8080/dist/js/tablas/Spanish.json"
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": [-1] } // Deshabilitar ordenamiento en columna de acciones
+                ]
+            });
+
+            // Auto-actualización cada 5 minutos
+            setInterval(function() {
+                if (confirm('¿Desea actualizar la lista de asistencias?')) {
+                    location.reload();
+                }
+            }, 300000); // 5 minutos
+        });
+
+        // Ir a la fecha de hoy
+        function irAHoy() {
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = hoy;
+            document.querySelector('form').submit();
+        }
+
+        // Editar asistencia
+        function editarAsistencia(id) {
+            asistenciaIdActual = id;
+            
+            // En una implementación real, cargarías los datos actuales via AJAX
+            // Por ahora simularemos
+            Swal.fire({
+                title: 'Cargando datos...',
+                text: 'Obteniendo información de la asistencia',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Simular carga de datos
+            setTimeout(() => {
+                Swal.close();
+                $('#editarAsistenciaModal').modal('show');
+                
+                // Aquí cargarías los datos reales de la asistencia
+                // document.getElementById('editEstado').value = asistencia.estado;
+                // etc.
+            }, 1000);
+        }
+
+        // Guardar cambios de la edición
+        function guardarCambios() {
+            const estado = document.getElementById('editEstado').value;
+            const turno = document.getElementById('editTurno').value;
+            const horaEntrada = document.getElementById('editHoraEntrada').value;
+            const horaSalida = document.getElementById('editHoraSalida').value;
+
+            if (!estado) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Estado requerido',
+                    text: 'Debe seleccionar un estado para la asistencia'
+                });
+                return;
+            }
+
+            // Simular guardado
+            Swal.fire({
+                title: 'Guardando cambios...',
+                text: 'Actualizando asistencia',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // En implementación real, aquí harías un AJAX POST
+            setTimeout(() => {
+                $('#editarAsistenciaModal').modal('hide');
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Actualizado!',
+                    text: 'La asistencia ha sido actualizada correctamente',
+                    timer: 2000
+                }).then(() => {
+                    location.reload();
+                });
+            }, 1500);
+        }
+
+        // Eliminar asistencia
+        function eliminarAsistencia(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción eliminará el registro de asistencia",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // En implementación real: window.location.href = `/asistencias/${id}/eliminar`;
+                    
+                    Swal.fire({
+                        title: 'Eliminando...',
+                        text: 'Procesando solicitud',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    setTimeout(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Eliminado!',
+                            text: 'El registro ha sido eliminado',
+                            timer: 2000
+                        }).then(() => {
+                            location.reload();
+                        });
+                    }, 1500);
+                }
+            });
+        }
+
+        // Exportar a Excel
+        function exportarExcel() {
+            Swal.fire({
+                icon: 'info',
+                title: 'Exportando...',
+                text: 'Generando archivo Excel con las asistencias',
+                timer: 2000
+            });
+
+            // En implementación real, rediriges a endpoint de exportación
+            // window.open(`/asistencias/export/excel?fecha=${document.getElementById('fecha').value}`);
+        }
+
+        // Exportar a PDF
+        function exportarPDF() {
+            Swal.fire({
+                icon: 'info',
+                title: 'Exportando...',
+                text: 'Generando reporte PDF',
+                timer: 2000
+            });
+
+            // En implementación real:
+            // window.open(`/asistencias/export/pdf?fecha=${document.getElementById('fecha').value}`);
+        }
+
+        // Actualización automática de estadísticas
+        function actualizarEstadisticas() {
+            // En implementación real, esto haría llamadas AJAX para obtener estadísticas actualizadas
+            const tabla = document.getElementById('asistenciasTable');
+            const filas = tabla.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            
+            let presentes = 0, ausentes = 0, justificados = 0, retrasos = 0;
+            
+            for (let fila of filas) {
+                const estadoBadge = fila.querySelector('.badge');
+                if (estadoBadge) {
+                    const texto = estadoBadge.textContent.trim();
+                    if (texto.includes('Presente')) presentes++;
+                    else if (texto.includes('Ausente')) ausentes++;
+                    else if (texto.includes('Justificado')) justificados++;
+                    else if (texto.includes('Retraso')) retrasos++;
+                }
+            }
+            
+            document.getElementById('totalPresentes').textContent = presentes;
+            document.getElementById('totalAusentes').textContent = ausentes;
+            document.getElementById('totalJustificados').textContent = justificados;
+            document.getElementById('totalRetrasos').textContent = retrasos;
+        }
+
+        // Ejecutar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarEstadisticas();
+        });
+
+        // Filtro rápido por estado
+        function filtrarPorEstado(estado) {
+            const tabla = $('#asistenciasTable').DataTable();
+            if (estado === 'todos') {
+                tabla.column(3).search('').draw();
+            } else {
+                tabla.column(3).search(estado).draw();
+            }
+        }
+
+        // Añadir botones de filtro rápido
+        $(document).ready(function() {
+            const filtrosRapidos = `
+                <div class="mb-3">
+                    <small class="text-muted">Filtros rápidos:</small><br>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary" onclick="filtrarPorEstado('todos')">
+                            Todos
+                        </button>
+                        <button type="button" class="btn btn-outline-success" onclick="filtrarPorEstado('Presente')">
+                            Presentes
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" onclick="filtrarPorEstado('Ausente')">
+                            Ausentes
+                        </button>
+                        <button type="button" class="btn btn-outline-warning" onclick="filtrarPorEstado('Justificado')">
+                            Justificados
+                        </button>
+                        <button type="button" class="btn btn-outline-info" onclick="filtrarPorEstado('Retraso')">
+                            Retrasos
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            $('.table-responsive').before(filtrosRapidos);
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

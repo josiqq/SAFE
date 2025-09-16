@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{fragments/layout}">
+
+<head>
+    <title>Control Masivo de Asistencias</title>
+</head>
+
+<body>
+
+    <div layout:fragment="content">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>
+                            <i class="fas fa-users-cog mr-2"></i>
+                            Control Masivo de Asistencias
+                        </h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{/asistencias}">Asistencias</a></li>
+                            <li class="breadcrumb-item active">Control Masivo</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="container-fluid">
+
+                <!-- Controles de filtrado -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-filter mr-2"></i>
+                                    Filtros y Configuración
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="filtrosForm" class="row">
+                                    <div class="col-md-3">
+                                        <label for="fechaControl">Fecha *</label>
+                                        <input type="date" class="form-control" id="fechaControl" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="turnoFiltro">Turno</label>
+                                        <select class="form-control" id="turnoFiltro">
+                                            <option value="">Todos los turnos</option>
+                                            <option th:each="turno : ${turnos}" th:value="${turno.id}"
+                                                th:text="${turno.nombre + ' (' + turno.horaInicio + ' - ' + turno.horaFin + ')'}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="rolFiltro">Rol</label>
+                                        <select class="form-control" id="rolFiltro">
+                                            <option value="">Todos los roles</option>
+                                            <option th:each="rol : ${roles}" th:value="${rol.id}"
+                                                th:text="${rol.nombre}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button type="button" class="btn btn-primary" onclick="cargarBomberos()">
+                                            <i class="fas fa-search mr-2"></i>
+                                            Cargar Bomberos
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de bomberos para control masivo -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card card-info">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-clipboard-list mr-2"></i>
+                                        Lista de Control
+                                    </h3>
+                                    <div class="card-tools">
+                                        <span class="badge badge-info" id="contadorBomberos">0 bomberos</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+
+                                <!-- Controles masivos -->
+                                <div class="mb-3 border-bottom pb-3">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-success btn-sm"
+                                                onclick="marcarTodos('PRESENTE')">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                Marcar Todos Presente
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm ml-1"
+                                                onclick="marcarTodos('AUSENTE')">
+                                                <i class="fas fa-times-circle mr-1"></i>
+                                                Marcar Todos Ausente
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button type="button" class="btn btn-warning btn-sm"
+                                                onclick="limpiarSeleccion()">
+                                                <i class="fas fa-eraser mr-1"></i>
+                                                Limpiar Todo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Lista de bomberos -->
+                                <div id="listaBomberos" class="table-responsive">
+                                    <div class="text-center py-4 text-muted">
+                                        <i class="fas fa-info-circle fa-2x mb-2"></i>
+                                        <p>Seleccione los filtros y presione "Cargar Bomberos" para comenzar</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="card-footer">
+                                <button type="button" class="btn btn-primary btn-lg"
+                                    onclick="guardarAsistenciasMasivas()" disabled id="btnGuardar">
+                                    <i class="fas fa-save mr-2"></i>
+                                    Guardar Asistencias Masivas
+                                </button>
+                                <button type="button" class="btn btn-secondary ml-2" onclick="previsualizarReporte()">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Previsualizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de resumen -->
+                    <div class="col-md-4">
+                        <div class="card card-success">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-chart-bar mr-2"></i>
+                                    Resumen de Marcaciones
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="info-box bg-success">
+                                    <span class="info-box-icon"><i class="fas fa-user-check"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Presentes</span>
+                                        <span class="info-box-number" id="contadorPresentes">0</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-box bg-danger">
+                                    <span class="info-box-icon"><i class="fas fa-user-times"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Ausentes</span>
+                                        <span class="info-box-number" id="contadorAusentes">0</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-box bg-warning">
+                                    <span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Justificados</span>
+                                        <span class="info-box-number" id="contadorJustificados">0</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-box bg-info">
+                                    <span class="info-box-icon"><i class="fas fa-clock"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Retrasos</span>
+                                        <span class="info-box-number" id="contadorRetrasos">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Acciones rápidas -->
+                        <div class="card card-light">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-bolt mr-2"></i>
+                                    Acciones Rápidas
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <button type="button" class="btn btn-info btn-block mb-2"
+                                    onclick="cargarAsistenciasExistentes()">
+                                    <i class="fas fa-history mr-2"></i>
+                                    Cargar Registros Existentes
+                                </button>
+                                <button type="button" class="btn btn-warning btn-block mb-2"
+                                    onclick="aplicarPatronTurno()">
+                                    <i class="fas fa-clock mr-2"></i>
+                                    Aplicar Patrón por Turno
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-block"
+                                    onclick="exportarControlMasivo()">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Exportar Control
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal de previsualización -->
+    <div class="modal fade" id="previsualizacionModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fas fa-eye mr-2"></i>
+                        Previsualización de Asistencias
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="previsualizacionContent">
+                    <!-- Contenido dinámico -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Cerrar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="confirmarGuardado()">
+                        <i class="fas fa-save mr-2"></i>
+                        Confirmar y Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="page-scripts">
+        <script>
+            let bomberosData = [];
+            let asistenciasSeleccionadas = {};
+
+            $(document).ready(function () {
+                // Establecer fecha actual
+                document.getElementById('fechaControl').value = new Date().toISOString().split('T')[0];
+            });
+
+            function cargarBomberos() {
+                const fecha = document.getElementById('fechaControl').value;
+                const turno = document.getElementById('turnoFiltro').value;
+                const rol = document.getElementById('rolFiltro').value;
+
+                if (!fecha) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Fecha requerida',
+                        text: 'Debe seleccionar una fecha para continuar'
+                    });
+                    return;
+                }
+
+                // Mostrar loading
+                document.getElementById('listaBomberos').innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando bomberos...</p>
+                </div>
+            `;
+
+                // Simular carga de datos (en implementación real sería AJAX)
+                setTimeout(() => {
+                    generarListaBomberos();
+                }, 1000);
+            }
+
+            function generarListaBomberos() {
+                // Datos simulados de bomberos
+                bomberosData = [
+                    { id: 1, nombre: 'Juan Pérez', username: 'jperez', rol: 'Bombero', turno: 'Turno A' },
+                    { id: 2, nombre: 'María García', username: 'mgarcia', rol: 'Paramédico', turno: 'Turno A' },
+                    { id: 3, nombre: 'Carlos López', username: 'clopez', rol: 'Jefe de Unidad', turno: 'Turno B' },
+                    { id: 4, nombre: 'Ana Martínez', username: 'amartinez', rol: 'Bombero', turno: 'Turno A' },
+                    { id: 5, nombre: 'Pedro Rodríguez', username: 'prodriguez', rol: 'Bombero', turno: 'Turno C' }
+                ];
+
+                let tablaHTML = `
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th width="5%">
+                                <input type="checkbox" id="selectAll" onchange="seleccionarTodos()">
+                            </th>
+                            <th>Bombero</th>
+                            <th>Turno</th>
+                            <th>Estado</th>
+                            <th>Hora Entrada</th>
+                            <th>Hora Salida</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+                bomberosData.forEach(bombero => {
+                    tablaHTML += `
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="bombero-checkbox" value="${bombero.id}" 
+                                   onchange="toggleBombero(${bombero.id})">
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar mr-2">
+                                    <div class="img-circle bg-primary d-flex align-items-center justify-content-center" 
+                                         style="width: 25px; height: 25px; font-size: 10px;">
+                                        <i class="fas fa-user text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <strong>${bombero.nombre}</strong>
+                                    <div class="text-muted small">${bombero.username}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-info">${bombero.turno}</span>
+                        </td>
+                        <td>
+                            <select class="form-control form-control-sm estado-select" 
+                                    id="estado_${bombero.id}" onchange="cambiarEstado(${bombero.id})">
+                                <option value="">Sin marcar</option>
+                                <option value="PRESENTE">Presente</option>
+                                <option value="AUSENTE">Ausente</option>
+                                <option value="JUSTIFICADO">Justificado</option>
+                                <option value="RETRASO">Retraso</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="time" class="form-control form-control-sm" 
+                                   id="entrada_${bombero.id}" disabled>
+                        </td>
+                        <td>
+                            <input type="time" class="form-control form-control-sm" 
+                                   id="salida_${bombero.id}" disabled>
+                        </td>
+                    </tr>
+                `;
+                });
+
+                tablaHTML += '</tbody></table>';
+
+                document.getElementById('listaBomberos').innerHTML = tablaHTML;
+                document.getElementById('contadorBomberos').textContent = bomberosData.length + ' bomberos';
+
+                // Habilitar botón de guardar
+                document.getElementById('btnGuardar').disabled = false;
+            }
+
+            function seleccionarTodos() {
+                const selectAll = document.getElementById('selectAll');
+                const checkboxes = document.querySelectorAll('.bombero-checkbox');
+
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = selectAll.checked;
+                    toggleBombero(parseInt(checkbox.value));
+                });
+            }
+
+            function toggleBombero(bomberoId) {
+                // Lógica para manejar selección individual
+                console.log('Toggle bombero:', bomberoId);
+            }
+
+            function marcarTodos(estado) {
+                const checkboxes = document.querySelectorAll('.bombero-checkbox:checked');
+
+                if (checkboxes.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Selección requerida',
+                        text: 'Debe seleccionar al menos un bombero'
+                    });
+                    return;
+                }
+
+                checkboxes.forEach(checkbox => {
+                    const bomberoId = checkbox.value;
+                    const estadoSelect = document.getElementById('estado_' + bomberoId);
+                    estadoSelect.value = estado;
+                    cambiarEstado(bomberoId);
+                });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Estados actualizados',
+                    text: `Se marcaron ${checkboxes.length} bomberos como ${estado.toLowerCase()}`,
+                    timer: 2000
+                });
+            }
+
+            function cambiarEstado(bomberoId) {
+                const estado = document.getElementById('estado_' + bomberoId).value;
+                const entradaInput = document.getElementById('entrada_' + bomberoId);
+                const salidaInput = document.getElementById('salida_' + bomberoId);
+
+                // Habilitar/deshabilitar campos de hora según el estado
+                if (estado === 'PRESENTE' || estado === 'RETRASO') {
+                    entradaInput.disabled = false;
+                    salidaInput.disabled = false;
+
+                    // Establecer hora actual si está vacío
+                    if (!entradaInput.value) {
+                        entradaInput.value = new Date().toTimeString().slice(0, 5);
+                    }
+                } else {
+                    entradaInput.disabled = true;
+                    salidaInput.disabled = true;
+                    entradaInput.value = '';
+                    salidaInput.value = '';
+                }
+
+                actualizarContadores();
+            }
+
+            function actualizarContadores() {
+                const estados = ['PRESENTE', 'AUSENTE', 'JUSTIFICADO', 'RETRASO'];
+
+                estados.forEach(estado => {
+                    const count = document.querySelectorAll(`.estado-select[value="${estado}"]`).length;
+                    const contadorElement = document.getElementById('contador' +
+                        estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase() + 's');
+                    if (contadorElement) {
+                        contadorElement.textContent = count;
+                    }
+                });
+            }
+
+            function limpiarSeleccion() {
+                Swal.fire({
+                    title: '¿Limpiar toda la selección?',
+                    text: 'Se perderán todos los estados marcados',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, limpiar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.querySelectorAll('.estado-select').forEach(select => {
+                            select.value = '';
+                            const bomberoId = select.id.split('_')[1];
+                            cambiarEstado(bomberoId);
+                        });
+
+                        document.getElementById('selectAll').checked = false;
+                        document.querySelectorAll('.bombero-checkbox').forEach(cb => cb.checked = false);
+
+                        Swal.fire('Limpiado', 'Se ha limpiado toda la selección', 'success');
+                    }
+                });
+            }
+
+            function cargarAsistenciasExistentes() {
+                const fecha = document.getElementById('fechaControl').value;
+
+                Swal.fire({
+                    title: 'Cargando registros existentes...',
+                    text: 'Obteniendo asistencias ya registradas para esta fecha',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Simular carga
+                setTimeout(() => {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Registros cargados',
+                        text: 'Se encontraron 3 asistencias existentes para esta fecha',
+                        timer: 2000
+                    });
+
+                    // Simular marcación de algunos existentes
+                    if (document.getElementById('estado_1')) {
+                        document.getElementById('estado_1').value = 'PRESENTE';
+                        cambiarEstado(1);
+                    }
+                }, 1500);
+            }
+
+            function aplicarPatronTurno() {
+                const turnoSeleccionado = document.getElementById('turnoFiltro').value;
+
+                if (!turnoSeleccionado) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Turno no seleccionado',
+                        text: 'Debe filtrar por un turno específico para aplicar patrones'
+                    });
+                    return;
+                }
+            }
+        </script>
+
+    </th:block>
+</body>
+
+</html>

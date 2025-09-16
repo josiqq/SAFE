@@ -36,6 +36,10 @@ public class EquipoService {
         equipoRepository.deleteById(id);
     }
 
+    public long count() {
+        return equipoRepository.count();
+    }
+
     // --- Métodos de lógica de negocio específicos ---
 
     @Transactional(readOnly = true)

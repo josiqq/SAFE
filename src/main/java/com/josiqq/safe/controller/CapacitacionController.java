@@ -1,13 +1,13 @@
 package com.josiqq.safe.controller;
 
+import com.josiqq.safe.model.Capacitacion;
+import com.josiqq.safe.service.BomberoService;
 import com.josiqq.safe.service.CapacitacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import com.josiqq.safe.model.Capacitacion;
-import com.josiqq.safe.service.BomberoService;
+import java.util.HashSet;
 
 @Controller
 @RequestMapping("/capacitaciones")
@@ -22,14 +22,18 @@ public class CapacitacionController {
     @GetMapping
     public String listarCapacitaciones(Model model) {
         model.addAttribute("capacitaciones", capacitacionService.findAll());
-        return "capacitaciones/lista"; // /templates/capacitaciones/lista.html
+        return "capacitaciones/lista";
     }
 
     @GetMapping("/nueva")
     public String mostrarFormularioDeNuevaCapacitacion(Model model) {
-        model.addAttribute("capacitacion", new Capacitacion());
+        // Inicializa el Set de participantes para evitar NullPointerException
+        Capacitacion nuevaCapacitacion = new Capacitacion();
+        nuevaCapacitacion.setParticipantes(new HashSet<>());
+        
+        model.addAttribute("capacitacion", nuevaCapacitacion);
         model.addAttribute("bomberos", bomberoService.findAll());
-        return "capacitaciones/formulario"; // /templates/capacitaciones/formulario.html
+        return "capacitaciones/formulario";
     }
 
     @PostMapping
@@ -42,7 +46,8 @@ public class CapacitacionController {
     public String editarCapacitacion(@PathVariable Long id, Model model) {
         Capacitacion capacitacion = capacitacionService.obtenerConParticipantes(id);
         model.addAttribute("capacitacion", capacitacion);
-        return "capacitacion/formulario";
+        // Corrige la ruta de retorno
+        return "capacitaciones/formulario";
     }
 
     @GetMapping("/{id}/eliminar")

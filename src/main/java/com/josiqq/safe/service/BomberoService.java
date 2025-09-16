@@ -42,6 +42,10 @@ public class BomberoService {
         bomberoRepository.deleteById(id);
     }
 
+    public long count() {
+        return bomberoRepository.count();
+    }
+
     // --- Métodos de lógica de negocio específicos ---
 
     @Transactional(readOnly = true)

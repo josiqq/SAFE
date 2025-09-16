@@ -41,6 +41,10 @@ public class VehiculoService {
         vehiculoRepository.deleteById(id);
     }
 
+    public long count () {
+        return vehiculoRepository.count();
+    }
+
     // --- Métodos de lógica de negocio específicos ---
 
     @Transactional(readOnly = true)
