@@ -3,28 +3,562 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>Home</title>
+    <title>Dashboard - Sistema de Gestión de Bomberos</title>
 </head>
 <body>
     <div layout:fragment="content">
+        <!-- Content Header -->
         <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Home</h1>
+                        <h1><i class="fas fa-fire-flame-curved"></i> Dashboard Principal</h1>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a th:href="@{/home}">Home</a></li>
+                            <li class="breadcrumb-item active">Dashboard</li>
                         </ol>
                     </div>
-                    
-                    <!-- card chat -->
-                    <div class="col-sm-6">
-                        <a href="/chat" class="btn btn-primary float-sm-right">Chat</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                
+                <!-- Emergency Alert -->
+                <!-- <div class="alert alert-danger alert-dismissible d-none" id="emergencyBanner">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h5><i class="icon fas fa-exclamation-triangle"></i> ¡ALERTA DE EMERGENCIA ACTIVA!</h5>
+                    Hay incidentes activos que requieren atención inmediata.
+                </div> -->
+
+                <!-- Quick Stats Info boxes -->
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <div class="info-box">
+                            <span class="info-box-icon bg-info elevation-1"><i class="fas fa-users"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Bomberos Activos</span>
+                                <span class="info-box-number" id="activeBomberos">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <div class="info-box mb-3">
+                            <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-fire"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Incidentes Activos</span>
+                                <span class="info-box-number" id="activeIncidents">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <div class="info-box mb-3">
+                            <span class="info-box-icon bg-success elevation-1"><i class="fas fa-truck"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Vehículos Operativos</span>
+                                <span class="info-box-number" id="availableVehicles">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <div class="info-box mb-3">
+                            <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-tools"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Alertas Mantenimiento</span>
+                                <span class="info-box-number" id="maintenanceAlerts">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard Cards -->
+                <div class="row">
+                    <!-- Gestión de Emergencias -->
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-danger">
+                            <div class="inner">
+                                <h3 id="emergencyCount">--</h3>
+                                <p>Gestión de Emergencias</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="small-box-footer">
+                                <div class="dropdown">
+                                    <a href="#" class="text-white dropdown-toggle" data-toggle="dropdown">
+                                        Acceder <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/incidentes">
+                                            <i class="fas fa-fire mr-2"></i>Incidentes
+                                        </a>
+                                        <a class="dropdown-item" href="/denuncias">
+                                            <i class="fas fa-phone mr-2"></i>Denuncias Públicas
+                                        </a>
+                                        <a class="dropdown-item" href="/alertas">
+                                            <i class="fas fa-bell mr-2"></i>Alertas
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gestión de Personal -->
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3 id="personnelCount">--</h3>
+                                <p>Gestión de Personal</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="small-box-footer">
+                                <div class="dropdown">
+                                    <a href="#" class="text-white dropdown-toggle" data-toggle="dropdown">
+                                        Acceder <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/bomberos">
+                                            <i class="fas fa-user-tie mr-2"></i>Bomberos
+                                        </a>
+                                        <a class="dropdown-item" href="/roles">
+                                            <i class="fas fa-id-badge mr-2"></i>Roles
+                                        </a>
+                                        <a class="dropdown-item" href="/asistencias">
+                                            <i class="fas fa-clock mr-2"></i>Asistencias
+                                        </a>
+                                        <a class="dropdown-item" href="/turnos">
+                                            <i class="fas fa-calendar-alt mr-2"></i>Turnos
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gestión de Vehículos -->
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-warning">
+                            <div class="inner">
+                                <h3 id="vehicleCount">--</h3>
+                                <p>Gestión de Vehículos</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="small-box-footer">
+                                <div class="dropdown">
+                                    <a href="#" class="text-white dropdown-toggle" data-toggle="dropdown">
+                                        Acceder <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/vehiculos">
+                                            <i class="fas fa-truck mr-2"></i>Vehículos
+                                        </a>
+                                        <a class="dropdown-item" href="/mantenimientos">
+                                            <i class="fas fa-tools mr-2"></i>Mantenimientos
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gestión de Equipos -->
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3 id="equipmentCount">--</h3>
+                                <p>Gestión de Equipos</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-hard-hat"></i>
+                            </div>
+                            <div class="small-box-footer">
+                                <div class="dropdown">
+                                    <a href="#" class="text-white dropdown-toggle" data-toggle="dropdown">
+                                        Acceder <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/equipos">
+                                            <i class="fas fa-helmet-safety mr-2"></i>Equipos
+                                        </a>
+                                        <a class="dropdown-item" href="/mantenimientos">
+                                            <i class="fas fa-wrench mr-2"></i>Mantenimientos
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Row of Cards -->
+                <div class="row">
+                    <!-- Capacitación -->
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-primary">
+                            <div class="inner">
+                                <h3 id="trainingCount">--</h3>
+                                <p>Capacitación</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="small-box-footer">
+                                <div class="dropdown">
+                                    <a href="#" class="text-white dropdown-toggle" data-toggle="dropdown">
+                                        Acceder <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/capacitaciones">
+                                            <i class="fas fa-chalkboard-teacher mr-2"></i>Capacitaciones
+                                        </a>
+                                        <a class="dropdown-item" href="/simulacros">
+                                            <i class="fas fa-flag-checkered mr-2"></i>Simulacros
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gestión Financiera -->
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-secondary">
+                            <div class="inner">
+                                <h3><i class="fas fa-dollar-sign"></i></h3>
+                                <p>Gestión Financiera</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <div class="small-box-footer">
+                                <div class="dropdown">
+                                    <a href="#" class="text-white dropdown-toggle" data-toggle="dropdown">
+                                        Acceder <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/presupuestos">
+                                            <i class="fas fa-chart-pie mr-2"></i>Presupuestos
+                                        </a>
+                                        <a class="dropdown-item" href="/compras">
+                                            <i class="fas fa-shopping-cart mr-2"></i>Compras
+                                        </a>
+                                        <a class="dropdown-item" href="/proveedores">
+                                            <i class="fas fa-handshake mr-2"></i>Proveedores
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reportes -->
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-dark">
+                            <div class="inner">
+                                <h3><i class="fas fa-chart-bar"></i></h3>
+                                <p>Reportes</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="small-box-footer">
+                                <div class="dropdown">
+                                    <a href="#" class="text-white dropdown-toggle" data-toggle="dropdown">
+                                        Acceder <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/asistencias/dashboard">
+                                            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard Asistencias
+                                        </a>
+                                        <a class="dropdown-item" href="/auditoria">
+                                            <i class="fas fa-history mr-2"></i>Auditoría
+                                        </a>
+                                        <a class="dropdown-item" href="/documentos">
+                                            <i class="fas fa-file-alt mr-2"></i>Documentos
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comunicaciones -->
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-indigo">
+                            <div class="inner">
+                                <h3><i class="fas fa-comments"></i></h3>
+                                <p>Comunicaciones</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="small-box-footer">
+                                <a href="/chat" class="text-white">
+                                    Chat Interno <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Row -->
+                <div class="row">
+                    <!-- Recent Activity -->
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-history"></i>
+                                    Actividad Reciente
+                                </h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" onclick="refreshActivities()">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <ul class="timeline" id="recentActivities">
+                                    <li class="time-label">
+                                        <span class="bg-red">Hoy</span>
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-fire bg-red"></i>
+                                        <div class="timeline-item">
+                                            <span class="time"><i class="fas fa-clock"></i> hace 15 min</span>
+                                            <h3 class="timeline-header">
+                                                <strong>Nuevo incidente reportado</strong>
+                                            </h3>
+                                            <div class="timeline-body">
+                                                Incendio en Av. Principal - Unidades despachadas
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-user-check bg-green"></i>
+                                        <div class="timeline-item">
+                                            <span class="time"><i class="fas fa-clock"></i> hace 1 hora</span>
+                                            <h3 class="timeline-header">
+                                                <strong>Asistencia registrada</strong>
+                                            </h3>
+                                            <div class="timeline-body">
+                                                Juan Pérez marcó entrada al turno de la mañana
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-wrench bg-yellow"></i>
+                                        <div class="timeline-item">
+                                            <span class="time"><i class="fas fa-clock"></i> hace 2 horas</span>
+                                            <h3 class="timeline-header">
+                                                <strong>Mantenimiento programado</strong>
+                                            </h3>
+                                            <div class="timeline-body">
+                                                Autobomba AB-01 - Revisión mecánica completada
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-clock bg-gray"></i>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="col-md-4">
+                        <!-- Weather Widget -->
+                        <div class="card bg-gradient-primary">
+                            <div class="card-header border-0">
+                                <h3 class="card-title">
+                                    <i class="fas fa-cloud-sun mr-1"></i>
+                                    Condiciones Climáticas
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex">
+                                    <p class="d-flex flex-column">
+                                        <span class="text-bold text-lg">24°C</span>
+                                        <span>Parcialmente nublado</span>
+                                    </p>
+                                    <p class="ml-auto d-flex flex-column text-right">
+                                        <span class="text-success">
+                                            <i class="fas fa-arrow-up"></i> 65%
+                                        </span>
+                                        <span class="text-muted">Humedad</span>
+                                    </p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="col-6 text-center">
+                                        <div class="text-white">
+                                            <span class="text-sm">Viento</span><br>
+                                            <span class="text-lg font-weight-bold">12 km/h</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <div class="text-white">
+                                            <span class="text-sm">Visibilidad</span><br>
+                                            <span class="text-lg font-weight-bold">10 km</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-bolt"></i>
+                                    Acciones Rápidas
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <a href="/incidentes/nuevo" class="btn btn-danger btn-block">
+                                    <i class="fas fa-plus mr-2"></i>Reportar Incidente
+                                </a>
+                                <a href="/asistencias/registrar" class="btn btn-primary btn-block">
+                                    <i class="fas fa-clock mr-2"></i>Registrar Asistencia
+                                </a>
+                                <a href="/alertas/nueva" class="btn btn-warning btn-block">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>Crear Alerta
+                                </a>
+                                <a href="/chat" class="btn btn-info btn-block">
+                                    <i class="fas fa-comments mr-2"></i>Abrir Chat
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Calendar -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-calendar"></i>
+                                    Calendario
+                                </h3>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="calendar-widget" class="fc-widget">
+                                    <div class="p-3 text-center">
+                                        <div class="h3" id="current-date">--</div>
+                                        <div class="text-muted" id="current-time">--</div>
+                                        <hr>
+                                        <div class="small">
+                                            <strong>Próximos eventos:</strong><br>
+                                            <div class="mt-2">
+                                                <span class="badge badge-info">Capacitación - 15:00</span><br>
+                                                <span class="badge badge-warning">Mantenimiento - Mañana</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
     </div>
+
+    <th:block layout:fragment="page-scripts">
+        <script>
+            $(document).ready(function() {
+                // Simular carga de estadísticas
+                loadStatistics();
+                
+                // Actualizar fecha y hora
+                updateDateTime();
+                setInterval(updateDateTime, 1000);
+                
+                // Inicializar dropdowns
+                $('.dropdown-toggle').dropdown();
+            });
+
+            function loadStatistics() {
+                // Simular datos con números aleatorios
+                $('#activeBomberos').text(Math.floor(Math.random() * 50) + 20);
+                $('#activeIncidents').text(Math.floor(Math.random() * 5) + 1);
+                $('#availableVehicles').text(Math.floor(Math.random() * 10) + 8);
+                $('#maintenanceAlerts').text(Math.floor(Math.random() * 3) + 1);
+                
+                $('#emergencyCount').text(Math.floor(Math.random() * 3) + 1);
+                $('#personnelCount').text(Math.floor(Math.random() * 50) + 25);
+                $('#vehicleCount').text(Math.floor(Math.random() * 15) + 10);
+                $('#equipmentCount').text(Math.floor(Math.random() * 30) + 20);
+                $('#trainingCount').text(Math.floor(Math.random() * 8) + 3);
+                
+                // Mostrar banner de emergencia si hay muchos incidentes activos
+                const activeIncidents = parseInt($('#activeIncidents').text());
+                if (activeIncidents > 3) {
+                    $('#emergencyBanner').removeClass('d-none');
+                }
+            }
+
+            function updateDateTime() {
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('es-ES', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                const timeStr = now.toLocaleTimeString('es-ES');
+                
+                $('#current-date').text(dateStr);
+                $('#current-time').text(timeStr);
+            }
+
+            function refreshActivities() {
+                // Simular actualización de actividades
+                const button = $('.card-tools .btn-tool');
+                button.find('i').addClass('fa-spin');
+                
+                setTimeout(() => {
+                    button.find('i').removeClass('fa-spin');
+                    // Aquí podrías cargar datos reales del servidor
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Actualizado',
+                        text: 'Actividades actualizadas correctamente',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }, 1000);
+            }
+
+            // Función para mostrar alertas de mantenimiento
+            function checkMaintenanceAlerts() {
+                const alerts = parseInt($('#maintenanceAlerts').text());
+                if (alerts > 2) {
+                    setTimeout(() => {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Alertas de Mantenimiento',
+                            text: `Hay ${alerts} alertas de mantenimiento pendientes.`,
+                            showCancelButton: true,
+                            confirmButtonText: 'Ver Alertas',
+                            cancelButtonText: 'Más Tarde'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '/mantenimientos';
+                            }
+                        });
+                    }, 3000);
+                }
+            }
+
+            // Verificar alertas después de cargar la página
+            setTimeout(checkMaintenanceAlerts, 2000);
+        </script>
+    </th:block>
 </body>
+</html>

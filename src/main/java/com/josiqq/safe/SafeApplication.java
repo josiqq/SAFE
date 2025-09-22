@@ -18,12 +18,12 @@ public class SafeApplication {
 	CommandLineRunner run(BomberoService bomberoService) {
 		return args -> {
 			// Crear un usuario administrador si no existe
-			if (bomberoService.findByUsername("admin1").isEmpty()) {
+			if (bomberoService.findByUsername("admin").isEmpty()) {
 				Bombero admin = new Bombero();
-				admin.setUsername("admin1");
+				admin.setUsername("admin");
 				admin.setPassword("admin123"); // El servicio se encargará de encriptarlo
 				admin.setNombre("Administrador");
-				admin.setApellido("del Sistema1");
+				admin.setApellido("del Sistema");
 				bomberoService.save(admin);
 				System.out.println(">>> Usuario 'admin' creado con contraseña 'admin123'");
 			}
